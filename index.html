@@ -52,17 +52,27 @@ body { margin: 0; background: var(--bg-app); color: var(--text-main); overflow-x
 .wa-link-card { display: flex; align-items: center; justify-content: center; gap: 8px; margin-top: 25px; color: var(--whatsapp); font-weight: 700; font-size: 13px; text-decoration: none; padding: 12px; border-radius: 12px; background: #f0fdf4; transition: 0.2s; cursor: pointer; }
 .wa-link-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(37, 211, 102, 0.2); }
 
-/* --- SIDEBAR NAVBAR (DESKTOP) --- */
+/* --- NOVO HEADER (APP-LIKE) --- */
+header.top-bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--surface); display: none; align-items: center; padding: 0 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.05); z-index: 9000; border-bottom: 1px solid var(--border); }
+#menu-overlay { position: fixed; inset: 0; background: rgba(15, 23, 42, 0.4); display: none; z-index: 9998; backdrop-filter: blur(2px); }
+
+/* --- SIDEBAR RETRÁTIL (PC E MOBILE) --- */
 #nav-bar { 
     position: fixed; top: 0; left: 0; 
-    width: 260px; height: 100vh; 
+    width: 280px; height: 100vh; 
     background: var(--surface); 
-    display: none; flex-direction: column; 
-    z-index: 1000; padding: 20px 15px; 
-    box-shadow: 4px 0 24px rgba(0,0,0,0.02);
+    display: none; 
+    flex-direction: column; 
+    z-index: 9999; padding: 20px 15px; 
+    box-shadow: 10px 0 30px rgba(0,0,0,0.1);
+    transform: translateX(-100%);
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
 }
-.nav-brand { padding: 10px 10px 30px 10px; font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; gap: 12px; letter-spacing: -0.5px; }
-.nav-brand i { color: var(--accent); font-size: 26px; background: #eff6ff; padding: 10px; border-radius: 12px; }
+.nav-brand { padding: 10px 10px 30px 10px; font-size: 20px; font-weight: 800; color: var(--primary); display: flex; align-items: center; justify-content: space-between; letter-spacing: -0.5px; }
+.nav-brand-title { display: flex; align-items: center; gap: 12px; }
+.nav-brand-title i { color: var(--accent); font-size: 26px; background: #eff6ff; padding: 10px; border-radius: 12px; }
+.nav-close-btn { background: none; border: none; font-size: 20px; color: var(--text-muted); cursor: pointer; padding: 10px; display: flex; align-items: center; justify-content: center; }
+
 .nav-item { 
     display: flex; align-items: center; gap: 15px; padding: 14px 15px; 
     color: var(--text-muted); font-size: 14px; font-weight: 600; 
@@ -74,9 +84,9 @@ body { margin: 0; background: var(--bg-app); color: var(--text-main); overflow-x
 .nav-item.active { background: #eff6ff; color: var(--accent); font-weight: 700; }
 .nav-item.active i { transform: scale(1.1); }
 
-/* MAIN CONTAINER */
+/* MAIN CONTAINER ATUALIZADO PARA OCUPAR TELA CHEIA E ESPAÇAR DO HEADER */
 main { 
-    padding: 40px; margin-left: 260px; 
+    padding: 80px 20px 40px 20px; margin: 0 auto; 
     max-width: 1000px; display: none; 
     animation: fadeIn 0.4s cubic-bezier(0.4, 0, 0.2, 1); 
 }
@@ -163,28 +173,12 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .agenda-map-box { height: 160px; background: #e2e8f0; margin-top: 15px; border-radius: 12px; overflow: hidden; position: relative; }
 .map-iframe { width: 100%; height: 100%; border: 0; }
 
-/* RESPONSIVIDADE (MOBILE OVERRIDE) */
+/* RESPONSIVIDADE */
 @media (max-width: 768px) {
-    #nav-bar { 
-        width: 100%; height: auto; top: auto; bottom: 0; 
-        border-right: none; border-top: 1px solid var(--border); 
-        flex-direction: row; padding: 0; z-index: 13000;
-        box-shadow: 0 -4px 20px rgba(0,0,0,0.05);
-    }
-    .nav-brand { display: none; }
-    .nav-item { 
-        flex-direction: column; gap: 6px; padding: 12px 8px; 
-        font-size: 10px; border-radius: 0; margin: 0;
-        border-left: none; border-top: 3px solid transparent; 
-        flex: 1; min-width: 70px; justify-content: center;
-    }
-    .nav-item i { font-size: 18px; }
-    .nav-item:hover { background: transparent; }
-    .nav-item.active { background: transparent; border-top-color: var(--accent); }
-    
-    main { margin-left: 0; padding: 20px; padding-bottom: 100px; }
     .input-row { grid-template-columns: 1fr; gap: 0; }
     .action-group { margin-top: 10px; width: 100%; justify-content: flex-start; }
+    .nav-item { flex-direction: row; font-size: 14px; justify-content: flex-start; padding: 14px 15px; }
+    .nav-item i { font-size: 18px; width: 22px; }
 }
 
 /* PDF PREVIEW STYLES */
@@ -226,6 +220,17 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 <body onload="auth.init()">
 
 <div id="toast-container"></div>
+
+<header class="top-bar">
+    <button onclick="ui.toggleMenu()" style="background: none; border: none; font-size: 20px; color: var(--primary); cursor: pointer; padding: 10px;">
+        <i class="fas fa-bars"></i>
+    </button>
+    <div style="margin-left: 15px; font-weight: 800; color: var(--primary); letter-spacing: -0.5px; font-size: 18px;">
+        <i class="fas fa-bolt" style="color: var(--accent)"></i> ERP Pro
+    </div>
+</header>
+
+<div id="menu-overlay" onclick="ui.toggleMenu()"></div>
 
 <div id="auth-overlay">
     <div id="view-master" class="auth-card" style="display:none">
@@ -352,19 +357,26 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 </div>
 
 <nav id="nav-bar">
-    <div class="nav-brand"><i class="fas fa-bolt"></i> ERP Pro</div>
-    <div class="nav-item active" onclick="ui.tab('f', this)"><i class="fas fa-chart-pie"></i>Resumo</div>
-    <div class="nav-item" onclick="ui.tab('v', this)"><i class="fas fa-file-invoice"></i>Gerar Doc</div>
-    <div class="nav-item" onclick="ui.tab('d', this)"><i class="fas fa-folder-open"></i>Histórico</div>
-    <div class="nav-item" onclick="ui.tab('a', this)"><i class="fas fa-calendar-alt"></i>Agenda</div>
-    <div class="nav-item" onclick="ui.tab('c', this)"><i class="fas fa-users"></i>Clientes</div>
-    <div class="nav-item" onclick="ui.tab('p', this)"><i class="fas fa-hard-hat"></i>Equipe</div>
-    <div class="nav-item" onclick="ui.tab('r', this)"><i class="fas fa-home"></i>Aluguéis</div>
-    <div class="nav-item" onclick="ui.tab('i', this)"><i class="fas fa-box-open"></i>Catálogo</div>
-    <div class="nav-item" style="margin-top:auto" onclick="ui.tab('e', this)"><i class="fas fa-cog"></i>Ajustes</div>
+    <div class="nav-brand">
+        <div class="nav-brand-title"><i class="fas fa-bolt"></i> ERP Pro</div>
+        <button class="nav-close-btn" onclick="ui.toggleMenu()"><i class="fas fa-times"></i></button>
+    </div>
+    
+    <div style="margin-top: 10px; overflow-y: auto; flex: 1;">
+        <div class="nav-item active" onclick="ui.tab('f', this)"><i class="fas fa-chart-pie"></i>Resumo</div>
+        <div class="nav-item" onclick="ui.tab('v', this)"><i class="fas fa-file-invoice"></i>Gerar Doc</div>
+        <div class="nav-item" onclick="ui.tab('d', this)"><i class="fas fa-folder-open"></i>Histórico</div>
+        <div class="nav-item" onclick="ui.tab('a', this)"><i class="fas fa-calendar-alt"></i>Agenda</div>
+        <div class="nav-item" onclick="ui.tab('c', this)"><i class="fas fa-users"></i>Clientes</div>
+        <div class="nav-item" onclick="ui.tab('p', this)"><i class="fas fa-hard-hat"></i>Equipe</div>
+        <div class="nav-item" onclick="ui.tab('r', this)"><i class="fas fa-home"></i>Aluguéis</div>
+        <div class="nav-item" onclick="ui.tab('i', this)"><i class="fas fa-box-open"></i>Catálogo</div>
+    </div>
+    
+    <div class="nav-item" style="margin-top:auto; border-top: 1px solid var(--border); padding-top: 15px;" onclick="ui.tab('e', this)"><i class="fas fa-cog"></i>Ajustes</div>
 </nav>
 
-<a href="https://wa.me/5514991580362" target="_blank" class="whatsapp-float" title="Suporte via WhatsApp"><i class="fab fa-whatsapp"></i></a>
+<a href="https://wa.me/5514991580362" target="_blank" class="whatsapp-float" title="Suporte via WhatsApp" style="position: fixed; bottom: 20px; right: 20px; background: var(--whatsapp); color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 10000; text-decoration: none;"><i class="fab fa-whatsapp"></i></a>
 
 <main id="app-container">
 
@@ -670,6 +682,18 @@ const ui = {
         document.getElementById('toast-container').appendChild(div);
         setTimeout(() => div.remove(), 3500);
     },
+    toggleMenu() {
+        const nav = document.getElementById('nav-bar');
+        const overlay = document.getElementById('menu-overlay');
+        const isOpen = nav.style.transform === 'translateX(0px)';
+        if (isOpen) {
+            nav.style.transform = 'translateX(-100%)';
+            overlay.style.display = 'none';
+        } else {
+            nav.style.transform = 'translateX(0px)';
+            overlay.style.display = 'block';
+        }
+    },
     tab(id, el) {
         document.querySelectorAll("section").forEach(s => s.style.display = "none");
         document.getElementById(id).style.display = "block";
@@ -679,6 +703,12 @@ const ui = {
             if(window.innerWidth <= 768) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
         if(db) { app.load(); agenda.load(); }
+        
+        // Esconder o menu ao clicar em uma aba
+        const nav = document.getElementById('nav-bar');
+        if(nav && nav.style.transform === 'translateX(0px)') {
+            this.toggleMenu();
+        }
     },
     close() { 
         document.getElementById("preview").style.display = "none"; 
@@ -732,7 +762,8 @@ const auth = {
     },
     enter() {
         document.getElementById('auth-overlay').style.display = 'none';
-        document.getElementById('nav-bar').style.display = 'flex';
+        document.querySelector('.top-bar').style.display = 'flex';
+        document.getElementById('nav-bar').style.display = 'flex'; // Fica invisível por causa do translateX
         document.getElementById('app-container').style.display = 'block';
         app.init();
     }

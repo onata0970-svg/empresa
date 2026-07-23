@@ -196,8 +196,25 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .agenda-map-box { height: 160px; background: #e2e8f0; margin-top: 15px; border-radius: 12px; overflow: hidden; position: relative; }
 .map-iframe { width: 100%; height: 100%; border: 0; }
 
+/* RESPONSIVIDADE */
+@media (max-width: 768px) {
+    .input-row { grid-template-columns: 1fr; gap: 0; }
+    .action-group { margin-top: 10px; width: 100%; justify-content: flex-start; }
+    .nav-item { flex-direction: row; font-size: 14px; justify-content: flex-start; padding: 14px 15px; }
+    .nav-item i { font-size: 18px; width: 22px; }
+    #preview .preview-header { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
+    #preview .preview-header > div { justify-content: center; }
+    .preview-title { justify-content: center; margin-bottom: 5px; }
+    
+    /* Classe adicionada dinamicamente via JS na pre-visualização (ZOOM CELULAR) */
+    .mobile-preview-scale {
+        transform: scale(0.42);
+        margin-bottom: -60%; /* Corrige a altura falsa apos o CSS transform no celular */
+    }
+}
+
 /* ========================================= */
-/* --- PDF PREVIEW STYLES (1 FOLHA E CELULAR COMPATÍVEL) --- */
+/* --- PDF PREVIEW STYLES (1 FOLHA FIXA A4) --- */
 /* ========================================= */
 #preview { position: fixed; inset: 0; background: #0f172a; display: none; flex-direction: column; z-index: 14000; }
 .preview-header { background: #1e293b; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-bottom: 1px solid #334155; }
@@ -241,7 +258,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .p-badge { background: var(--accent); color: #fff; padding: 6px 14px; font-size: 12px; font-weight: 800; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.5px; }
 .p-meta-row { font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px; }
 
-/* Substituição completa de grid para flex (html2canvas ODEIA display grid) */
+/* Utilizando Flex ao invés de Grid para não quebrar o plugin HTML2CANVAS */
 .p-grid { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; page-break-inside: avoid; }
 .p-box { width: 48%; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; page-break-inside: avoid; background: #fff; }
 .p-box-head { background: #f8fafc; padding: 8px 12px; font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; letter-spacing: 0.5px; }
@@ -271,22 +288,6 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .badge-alugueis { background: var(--purple); }
 .badge-hist-pgto { background: var(--dark-blue); }
 
-/* RESPONSIVIDADE MOBILE PREVIEW A4 */
-@media (max-width: 768px) {
-    .input-row { grid-template-columns: 1fr; gap: 0; }
-    .action-group { margin-top: 10px; width: 100%; justify-content: flex-start; }
-    .nav-item { flex-direction: row; font-size: 14px; justify-content: flex-start; padding: 14px 15px; }
-    .nav-item i { font-size: 18px; width: 22px; }
-    #preview .preview-header { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
-    #preview .preview-header > div { justify-content: center; }
-    .preview-title { justify-content: center; margin-bottom: 5px; }
-    
-    /* Classe adicionada dinamicamente via JS na pre-visualização */
-    .mobile-preview-scale {
-        transform: scale(0.42);
-        margin-bottom: -60%; /* Corrige a altura falsa apos o CSS transform no celular */
-    }
-}
 </style>
 </head>
 
@@ -808,10 +809,10 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         <div class="preview-title"><i class="fas fa-file-alt"></i> VISUALIZADOR DE DOCUMENTO</div>
         <div style="display:flex; gap:10px">
             <button id="btn-print-pdf" class="btn" style="width:auto; background:#3b82f6; color:#fff; font-size:13px; padding:12px 20px;" onclick="app.printDoc()"><i class="fas fa-print"></i> IMPRIMIR</button>
-            <button id="btn-confirm-save-pdf" class="btn btn-success" style="width:auto; font-size:13px; padding:12px 20px; box-shadow:0 4px 15px rgba(16,185,129,0.3)" onclick="app.confirmAndSaveDoc()">SALVAR E BAIXAR <i class="fas fa-download"></i></button>
+            <button id="btn-confirm-save-pdf" class="btn btn-success" style="width:auto; font-size:13px; padding:12px 20px; box-shadow:0 4px 15px rgba(16,185,129,0.3)" onclick="app.confirmAndSaveDoc()">BAIXAR PDF <i class="fas fa-download"></i></button>
         </div>
     </div>
-    <div id="pdf-wrapper"><div id="pdf-box"></div></div>
+    <div id="pdf-wrapper"><div id="pdf-box" class="mobile-preview-scale"></div></div>
 </div>
 
 <script>
@@ -1808,11 +1809,11 @@ const app = {
         document.getElementById("preview").style.display = "flex";
     },
 
-    // Impressão Nativa (Abrir via BlobURL e mandar Imprimir)
+    // Ação do Botão IMPRIMIR
     printDoc() {
-        ui.showLoading("Preparando para Imprimir...");
+        ui.showLoading("Preparando Impressão...");
         const el = document.getElementById("pdf-box");
-        el.classList.remove("mobile-preview-scale"); // Restaura o tamanho HD para renderizar
+        el.classList.remove("mobile-preview-scale"); // Restaura o tamanho HD
         
         setTimeout(() => {
             const opt = { 
@@ -1823,12 +1824,11 @@ const app = {
             };
             
             html2pdf().set(opt).from(el).outputPdf('bloburl').then(function(pdfUrl) {
-                el.classList.add("mobile-preview-scale"); // Devolve a miniatura
+                el.classList.add("mobile-preview-scale");
                 ui.hideLoading();
                 
                 const printWindow = window.open(pdfUrl, '_blank');
                 if(!printWindow) {
-                    // Fallback para celulares iOS/Android severos
                     const a = document.createElement('a');
                     a.href = pdfUrl;
                     a.target = '_blank';
@@ -1841,7 +1841,57 @@ const app = {
                 ui.hideLoading();
                 ui.toast("Erro ao preparar impressão.", "error");
             });
-        }, 300);
+        }, 100);
+    },
+
+    // --- LÓGICA CENTRAL DE DOWNLOAD DO PDF (ADAPTADO PARA CELULAR E PC) ---
+    async triggerDownload(el, filename) {
+        const opt = { 
+            margin: 0, 
+            filename: filename, 
+            image: { type: 'jpeg', quality: 0.98 }, 
+            html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
+        };
+        
+        try {
+            // Gera o PDF em Blob real (Arquivo na memória)
+            const pdfBlob = await html2pdf().set(opt).from(el).output('blob');
+            
+            // Detecta se é celular/tablet
+            const isMobile = /Android|webOS|iPhone|iPad|iPod|BlackBerry|IEMobile|Opera Mini/i.test(navigator.userAgent);
+            
+            // 1. TENTA COMPARTILHAMENTO NATIVO (Abre menu do iOS/Android para Zap, Email, Salvar)
+            if (isMobile && navigator.canShare) {
+                const file = new File([pdfBlob], filename, { type: 'application/pdf' });
+                if (navigator.canShare({ files: [file] })) {
+                    try {
+                        await navigator.share({ title: filename, files: [file] });
+                        return; // O usuário completou o compartilhamento
+                    } catch(err) {
+                        console.log("Compartilhamento nativo não foi concluído:", err);
+                    }
+                }
+            }
+
+            // 2. FALLBACK SE COMPARTILHAR FALHAR OU FOR PC (Força o link de download na tela)
+            const blobUrl = URL.createObjectURL(pdfBlob);
+            const a = document.createElement('a');
+            a.style.display = 'none';
+            a.href = blobUrl;
+            a.download = filename;
+            document.body.appendChild(a);
+            a.click();
+            
+            setTimeout(() => { 
+                document.body.removeChild(a); 
+                URL.revokeObjectURL(blobUrl); 
+            }, 500);
+
+        } catch(error) {
+            console.error("Erro na geração do PDF:", error);
+            ui.toast("Erro interno ao gerar PDF", "error");
+        }
     },
 
     previewRentalReceipt(id) {
@@ -1869,7 +1919,7 @@ const app = {
                 <div class="p-meta-col"><div class="p-badge" style="background:var(--purple); color:#fff">RECIBO #${docNum}</div><div class="p-meta-row">Emissão: ${new Date().toLocaleDateString()}</div></div>
             </div>
             <div class="p-grid p-break-avoid">
-                <div class="p-box" style="border-color:var(--purple)"><div class="p-box-head" style="background:#faf5ff; color:var(--purple); border-color:var(--purple)">DADOS DA LOCAÇÃO</div><div class="p-box-content"><b>Locatário: ${r.inquilino}</b><br>Item: ${r.descricao}<br>Base de Cobrança: ${periodo} (${BRL.format(r.valor)})</div></div>
+                <div class="p-box" style="border-color:var(--purple); width:48%;"><div class="p-box-head" style="background:#faf5ff; color:var(--purple); border-color:var(--purple)">DADOS DA LOCAÇÃO</div><div class="p-box-content"><b>Locatário: ${r.inquilino}</b><br>Item: ${r.descricao}<br>Base de Cobrança: ${periodo} (${BRL.format(r.valor)})</div></div>
             </div>
             <table class="p-table" style="margin-top:20px">
                 <thead><tr><th style="width:45%; background:var(--purple); border-color:var(--purple)">DESCRIÇÃO DA COBRANÇA</th><th style="width:10%; text-align:center; background:var(--purple); border-color:var(--purple)">QTD</th><th style="width:20%; text-align:right; background:var(--purple); border-color:var(--purple)">VALOR BASE</th><th style="width:25%; text-align:right; background:var(--purple); border-color:var(--purple)">TOTAL DEVIDO</th></tr></thead>
@@ -1890,6 +1940,78 @@ const app = {
         document.getElementById("pdf-box").innerHTML = html;
         document.getElementById("pdf-box").className = "mobile-preview-scale";
         document.getElementById("preview").style.display = "flex";
+    },
+
+    previewRentalsReport() {
+        if(this.rentals.length === 0) return ui.toast("Aviso: Lista de locações está vazia.", "warning");
+        const c = this.config; const en = c.n || "Sua Empresa";
+        const docNum = `ALUG-${Math.floor(Math.random() * 8999) + 1000}`;
+        let totalPago = 0; let totalPendente = 0; let linhasTabela = '';
+        let sorted = [...this.rentals].sort((a,b) => new Date(a.vencimento) - new Date(b.vencimento));
+
+        sorted.forEach(r => {
+            let isPaid = r.status === 'Pago';
+            if(isPaid) totalPago += r.valor; else totalPendente += r.valor;
+            let venc = r.vencimento ? new Date(r.vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
+            let statusText = isPaid ? `<span style="color:var(--success)"><b>PAGO</b> (${new Date(r.dataPgto + 'T12:00:00').toLocaleDateString('pt-BR')})</span>` : `<span style="color:var(--danger)"><b>PENDENTE</b></span>`;
+            linhasTabela += `<tr><td style="font-size:10px"><b>${r.descricao}</b><br><span style="color:#64748b">${r.inquilino}</span></td><td style="text-align:center">${venc}</td><td style="text-align:center">${statusText}</td><td style="text-align:right; font-weight:bold">${BRL.format(r.valor)}</td></tr>`;
+        });
+
+        const html = `<div class="p-header p-break-avoid" style="border-bottom-color: var(--purple)"><div class="p-brand-col"><h1 class="p-title">${en}</h1><p class="p-subtitle">Documento de Controle Interno</p></div><div class="p-meta-col"><div class="p-badge" style="background:var(--purple); color:#fff">BALANÇO DE ALUGUÉIS #${docNum}</div><div class="p-meta-row">Emissão: ${new Date().toLocaleDateString()}</div></div></div><div class="p-grid p-break-avoid"><div class="p-box" style="border-color:var(--success); width:48%;"><div class="p-box-head" style="background:#dcfce7; color:#166534; border-color:var(--success)">RECEBIDOS (PAGOS)</div><div class="p-box-content" style="font-size:18px; font-weight:bold; color:var(--success)">${BRL.format(totalPago)}</div></div><div class="p-box" style="border-color:var(--danger); width:48%;"><div class="p-box-head" style="background:#fee2e2; color:#991b1b; border-color:var(--danger)">PENDENTES (A VENCER/ATRASOS)</div><div class="p-box-content" style="font-size:18px; font-weight:bold; color:var(--danger)">${BRL.format(totalPendente)}</div></div></div><table class="p-table" style="margin-top:20px"><thead><tr><th style="width:40%; background:var(--purple); border-color:var(--purple)">ITEM / LOCATÁRIO</th><th style="width:15%; text-align:center; background:var(--purple); border-color:var(--purple)">VENCIMENTO</th><th style="width:25%; text-align:center; background:var(--purple); border-color:var(--purple)">STATUS</th><th style="width:20%; text-align:right; background:var(--purple); border-color:var(--purple)">VALOR</th></tr></thead><tbody>${linhasTabela}</tbody></table><div class="p-total-section p-break-avoid"><div class="p-total-card" style="border-color:var(--purple); background:#faf5ff;"><div class="p-total-label">TOTAL GERAL PROJETADO:</div><div class="p-total-amount" style="color:var(--purple)">${BRL.format(totalPago + totalPendente)}</div></div></div>`;
+        this.currentDocState = { id: Date.now(), typeTitle: "RELATÓRIO DE ALUGUÉIS", numero: docNum, clientName: `Controle Interno`, total: totalPago + totalPendente, html: html, isReport: true };
+        document.getElementById("pdf-box").innerHTML = html;
+        document.getElementById("pdf-box").className = "mobile-preview-scale";
+        document.getElementById("preview").style.display = "flex";
+    },
+
+    previewProviderHistory() {
+        const id = parseInt(document.getElementById("pm-id").value);
+        const p = this.providers.find(x => x.id === id);
+        if(!p || !p.pagamentos || p.pagamentos.length === 0) return ui.toast("Zero pagamentos lançados para este parceiro.", "warning");
+        const c = this.config; const en = c.n || "Sua Empresa";
+        const docNum = `HIST-${Math.floor(Math.random() * 8999) + 1000}`;
+        let totalPago = 0; let linhasTabela = '';
+        let sortedPayments = [...p.pagamentos].sort((a,b) => new Date(b.data) - new Date(a.data));
+        
+        sortedPayments.forEach(pg => {
+            totalPago += pg.valor;
+            linhasTabela += `<tr><td style="text-align:center; font-weight:bold">${new Date(pg.data + 'T12:00:00').toLocaleDateString('pt-BR')}</td><td>${pg.desc}</td><td style="text-align:right; font-weight:bold; color:var(--dark-blue)">${BRL.format(pg.valor)}</td></tr>`;
+        });
+
+        const html = `<div class="p-header p-break-avoid" style="border-bottom-color: var(--dark-blue)"><div class="p-brand-col"><h1 class="p-title">${en}</h1><p class="p-subtitle">Extrato de Pagamentos Realizados</p></div><div class="p-meta-col"><div class="p-badge" style="background:var(--dark-blue); color:#fff">HISTÓRICO #${docNum}</div><div class="p-meta-row">Emissão: ${new Date().toLocaleDateString()}</div></div></div><div class="p-grid p-break-avoid"><div class="p-box" style="border-color:var(--dark-blue); width:48%;"><div class="p-box-head" style="background:#eff6ff; color:var(--dark-blue); border-color:var(--dark-blue)">DADOS DA CONTA</div><div class="p-box-content"><b>Profissional: ${p.nome}</b><br>Função Principal: ${p.funcao}<br>Anotações Bancárias: ${p.notas || 'Nenhuma.'}</div></div></div><table class="p-table" style="margin-top:20px"><thead><tr><th style="width:20%; text-align:center; background:var(--dark-blue); border-color:var(--dark-blue)">DATA</th><th style="width:55%; background:var(--dark-blue); border-color:var(--dark-blue)">DESCRIÇÃO / REF</th><th style="width:25%; text-align:right; background:var(--dark-blue); border-color:var(--dark-blue)">VALOR PAGO</th></tr></thead><tbody>${linhasTabela}</tbody></table><div class="p-total-section p-break-avoid"><div class="p-total-card" style="border-color:var(--dark-blue); background:#eff6ff"><div class="p-total-label">TOTAL PAGO NO PERÍODO:</div><div class="p-total-amount" style="color:var(--dark-blue)">${BRL.format(totalPago)}</div></div></div><div class="p-sign-area p-break-avoid" style="margin-top:80px"><div class="p-sign-line">CONFERÊNCIA (EMPRESA)</div><div class="p-sign-line">CONFERÊNCIA (${p.nome})</div></div>`;
+        this.currentDocState = { id: Date.now(), typeTitle: "HISTÓRICO DE PAGAMENTOS", numero: docNum, clientName: `Extrato: ${p.nome}`, total: totalPago, html: html, isReport: true };
+        document.getElementById("pdf-box").innerHTML = html;
+        document.getElementById("pdf-box").className = "mobile-preview-scale";
+        document.getElementById("preview").style.display = "flex";
+    },
+
+    previewProviderReport(id) {
+        const p = this.providers.find(x => x.id === id);
+        if(!p) return;
+        let labelExtenso = "";
+        if(p.tipoPgto === "Diário") labelExtenso = "DIÁRIAS"; else if(p.tipoPgto === "Semanal") labelExtenso = "SEMANAS"; else if(p.tipoPgto === "Mensal") labelExtenso = "MESES"; else if(p.tipoPgto === "Empreita") labelExtenso = "EMPREITAS"; else labelExtenso = "UNIDADES (Serviço)";
+        const qtdTrabalhada = prompt(`Recibo para ${p.nome}:\nQuantos(as) ${labelExtenso} devem ser multiplicados(as) pela base?`, "1");
+        if(qtdTrabalhada === null || qtdTrabalhada.trim() === "" || isNaN(qtdTrabalhada)) return;
+        
+        const q = parseFloat(qtdTrabalhada);
+        const totalCalc = q * p.valor;
+        const c = this.config; const en = c.n || "Sua Empresa";
+        const docNum = `RECIBO-${Math.floor(Math.random() * 8999) + 1000}`;
+
+        const html = `<div class="p-header p-break-avoid" style="border-bottom-color: var(--info)"><div class="p-brand-col"><h1 class="p-title">${en}</h1><p class="p-subtitle">Documento Interno de Pagamento</p></div><div class="p-meta-col"><div class="p-badge" style="background:var(--info); color:#fff">RECIBO RÁPIDO #${docNum}</div><div class="p-meta-row">Emissão: ${new Date().toLocaleDateString()}</div></div></div><div class="p-grid p-break-avoid"><div class="p-box" style="border-color:var(--info); width:48%;"><div class="p-box-head" style="background:#e0f2fe; color:#0369a1; border-color:var(--info)">DADOS DA FICHA</div><div class="p-box-content"><b>${p.nome}</b><br>Função: ${p.funcao}<br>Regime Base: ${p.tipoPgto} (${BRL.format(p.valor)})</div></div></div><table class="p-table" style="margin-top:20px"><thead><tr><th style="width:45%; background:var(--info); border-color:var(--info)">DESCRIÇÃO DA TAREFA / PERÍODO</th><th style="width:10%; text-align:center; background:var(--info); border-color:var(--info)">QTD</th><th style="width:20%; text-align:right; background:var(--info); border-color:var(--info)">VALOR BASE</th><th style="width:25%; text-align:right; background:var(--info); border-color:var(--info)">TOTAL DEVIDO</th></tr></thead><tbody><tr><td>Prestação de serviço calculada sobre ${q} ${labelExtenso.toLowerCase()}.</td><td style="text-align:center; font-weight:bold">${q}</td><td style="text-align:right">${BRL.format(p.valor)}</td><td style="text-align:right; font-weight:900; color:var(--info)">${BRL.format(totalCalc)}</td></tr></tbody></table><div class="p-total-section p-break-avoid"><div class="p-total-card" style="border-color:var(--info); background:#f0f9ff"><div class="p-total-label">VALOR A PAGAR:</div><div class="p-total-amount" style="color:var(--info)">${BRL.format(totalCalc)}</div></div></div><div class="p-sign-area p-break-avoid" style="margin-top:80px"><div class="p-sign-line">ASSINATURA RESPONSÁVEL</div><div class="p-sign-line">RECIBO / ASSINATURA (${p.nome})</div></div>`;
+        this.currentDocState = { id: Date.now(), typeTitle: "RECIBO DE PRESTAÇÃO", numero: docNum, clientName: `Recibo: ${p.nome}`, total: totalCalc, html: html, isReport: true };
+        document.getElementById("pdf-box").innerHTML = html;
+        document.getElementById("pdf-box").className = "mobile-preview-scale";
+        document.getElementById("preview").style.display = "flex";
+    },
+
+    previewEasyReceipt() {
+        const desc = document.getElementById("vr-desc").value;
+        const val = parseFloat(document.getElementById("vr-val").value);
+        if(!desc || isNaN(val) || val <= 0) return ui.toast("Preencha a especificação e um valor válido.", "warning");
+        
+        this.cart = [{ n: desc, p: val, q: 1, u: "vb" }];
+        this.previewDoc();
     },
 
     previewDoc() {
@@ -1966,8 +2088,8 @@ const app = {
             <div class="p-header p-break-avoid" style="border-bottom-color: ${badgeColor}"><div class="p-brand-col">${logo ? `<img src="${logo}" class="p-logo">` : ''}<h1 class="p-title">${en}</h1><p class="p-subtitle">CNPJ: ${ed}<br>Contato: ${ec}</p></div><div class="p-meta-col"><div class="p-badge" style="background:${badgeColor}; color:${docSelect==='pedido_compra' ? '#000' : '#fff'}">${docTitle} #${docNum}</div><div class="p-meta-row">Data: ${new Date().toLocaleDateString()}</div><div class="p-meta-row">Validade: 15 Dias</div></div></div>
             
             <div class="p-grid p-break-avoid">
-                <div class="p-box"><div class="p-box-head">EMISSOR</div><div class="p-box-content"><b>${en}</b><br>${ed}<br>${ec} ${executorHtml}</div></div>
-                <div class="p-box"><div class="p-box-head">${boxTitle}</div><div class="p-box-content"><b>${cli.nome}</b><br>${cli.doc}<br>${cli.tel}<br>${cli.end || ''}</div></div>
+                <div class="p-box" style="width:48%;"><div class="p-box-head">EMISSOR</div><div class="p-box-content"><b>${en}</b><br>${ed}<br>${ec} ${executorHtml}</div></div>
+                <div class="p-box" style="width:48%;"><div class="p-box-head">${boxTitle}</div><div class="p-box-content"><b>${cli.nome}</b><br>${cli.doc}<br>${cli.tel}<br>${cli.end || ''}</div></div>
             </div>
             
             ${agendamentoHtml}
@@ -1978,7 +2100,7 @@ const app = {
             </table>
             
             <div class="p-grid p-break-avoid" style="margin-bottom:40px;">
-                <div style="width: 100%; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; font-size:10px;">
+                <div style="width: 48%; background:#f8fafc; padding:15px; border-radius:8px; border:1px solid #e2e8f0; font-size:10px;">
                     <div style="font-weight:800; color:var(--primary); margin-bottom:5px;">CONDIÇÕES DE PAGAMENTO:</div>
                     <div style="font-size:12px">Forma combinada: <b style="color:var(--accent)">${payMethod}</b></div>
                     ${ep ? `<div style="margin-top:10px; border-top:1px dashed #cbd5e1; padding-top:10px; white-space:pre-wrap;">${ep}</div>` : ''}
@@ -2005,35 +2127,28 @@ const app = {
         };
         
         document.getElementById("pdf-box").innerHTML = html;
-        document.getElementById("pdf-box").className = "mobile-preview-scale"; // Aplica o zoom automatico no celular
+        document.getElementById("pdf-box").className = "mobile-preview-scale";
         document.getElementById("preview").style.display = "flex";
     },
 
     confirmAndSaveDoc() {
         if (!this.currentDocState) return;
         
-        ui.showLoading("Gerando Arquivo PDF HD...");
-        
+        ui.showLoading("Preparando o PDF...");
         const el = document.getElementById("pdf-box");
-        el.classList.remove("mobile-preview-scale"); // Restaura tamanho original pra print do PDF
+        el.classList.remove("mobile-preview-scale"); // Restaura tamanho original pra renderização do PDF
         
-        // Timeout para dar tempo da renderização da tela fluir
+        const badge = el.querySelector('.p-badge');
+        const filename = badge ? `${badge.innerText.replace(' #', '_')}.pdf` : `Documento_${Date.now()}.pdf`;
+        
+        // Timeout para dar tempo da renderização da tela fluir sem zoom
         setTimeout(() => {
-            const badge = el.querySelector('.p-badge');
-            const filename = badge ? `${badge.innerText.replace(' #', '_')}.pdf` : `Documento_${Date.now()}.pdf`;
-            
-            const opt = { 
-                margin: 0, 
-                filename: filename, 
-                image: { type: 'jpeg', quality: 0.98 }, 
-                html2canvas: { scale: 2, useCORS: true, scrollY: 0 }, 
-                jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
-            };
-            
-            html2pdf().set(opt).from(el).save().then(() => {
+            this.triggerDownload(el, filename).then(() => {
                 
-                // Grava no banco de dados apos gerar pdf
-                if (this.currentDocState.eventData && !this.currentDocState.isReport) { db.transaction("events", "readwrite").objectStore("events").add(this.currentDocState.eventData); }
+                // Grava no banco de dados
+                if (this.currentDocState.eventData && !this.currentDocState.isReport) { 
+                    db.transaction("events", "readwrite").objectStore("events").add(this.currentDocState.eventData); 
+                }
                 
                 const docToSave = { 
                     id: this.currentDocState.id, 
@@ -2052,9 +2167,9 @@ const app = {
                 const req = this.editingDocId ? tx.put(docToSave) : tx.add(docToSave);
 
                 req.onsuccess = () => {
-                    el.classList.add("mobile-preview-scale"); // Restaura miniatura
+                    el.classList.add("mobile-preview-scale");
                     ui.hideLoading();
-                    ui.toast(this.editingDocId ? "Documento atualizado e salvo!" : "PDF gerado e arquivado com sucesso!");
+                    ui.toast(this.editingDocId ? "Documento atualizado e salvo!" : "PDF gerado com sucesso!");
                     
                     if(!this.currentDocState.isReport) {
                         document.getElementById("v-ag-date").value = ""; 
@@ -2067,20 +2182,14 @@ const app = {
                         this.editingDocId = null;
                         document.getElementById("edit-discount-box").style.display = "none";
                         document.getElementById("btn-cancel-edit-v").style.display = "none";
-                        
                         document.getElementById("vr-desc").value = "";
                         document.getElementById("vr-val").value = "";
                     }
                     this.load(); 
-                    
-                    setTimeout(() => { ui.close(); }, 1500);
+                    ui.close();
                 };
-            }).catch(err => {
-                el.classList.add("mobile-preview-scale");
-                ui.hideLoading();
-                ui.toast("Erro inesperado ao gerar PDF", "error");
             });
-        }, 300);
+        }, 150);
     }
 };
 </script>

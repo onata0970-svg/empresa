@@ -235,9 +235,9 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 /* FORMATO A4 FIXO EM PIXELS (ZERA CHANCE DE 2 PÁGINAS SEM MOTIVO) */
 #pdf-box { 
     width: 794px; 
-    min-height: 1040px; /* Reduzido levemente de 1122px para garantir o fit da 1 página */
+    min-height: 980px; /* Reduzido para garantir encaixe sem criar folha em branco */
     background: #ffffff; 
-    padding: 40px; 
+    padding: 30px; /* Ajustado para compensar a margem 0 do JavaScript */
     color: #1e293b; 
     box-shadow: 0 10px 40px rgba(0,0,0,0.4); 
     font-family: 'Inter', sans-serif; 
@@ -1980,12 +1980,11 @@ const app = {
         const filename = badge ? `${badge.innerText.replace(' #', '_')}.pdf` : `Documento_${Date.now()}.pdf`;
         
         const opt = { 
-            margin: [10, 10, 10, 10], 
+            margin: 0, 
             filename: filename, 
             image: { type: 'jpeg', quality: 0.98 }, 
             html2canvas: { scale: 2, useCORS: true, letterRendering: true, scrollY: 0, windowWidth: 794 }, 
-            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' }, 
-            pagebreak: { mode: ['avoid-all', 'css', 'legacy'] } 
+            jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
         };
         
         // Força o download clássico do html2pdf

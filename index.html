@@ -992,23 +992,28 @@ const auth = {
     },
 
     async verifySubscription(email) {
-        ui.showLoading("Verificando assinatura...");
+        ui.showLoading("Verificando assinatura no Banco de Dados...");
         try {
-            const urlPlanilha = `https://script.google.com/macros/s/AKfycbwfTmF6Udyoq_kQQjxi8tVpg2eOQa3RUz5ZivgfO40/exec?email=${encodeURIComponent(email)}`;
-            const res = await fetch(urlPlanilha);
+            // 🚨 AQUI ESTÁ O SEU LINK DO FIREBASE OFICIAL 🚨
+            const urlFirebase = "https://erp-pro-master-default-rtdb.firebaseio.com";
+            
+            // Firebase não aceita ponto (.) nas chaves, então substituímos por vírgula (,)
+            const emailFormatado = email.replace(/\./g, ',');
+            
+            const urlConsulta = `${urlFirebase}/assinaturas/${emailFormatado}.json`;
+            const res = await fetch(urlConsulta);
             const data = await res.json();
             
-            if (data.status === 'encontrado') {
+            if (data && data.vencimento) {
                 const hoje = new Date();
                 hoje.setHours(0,0,0,0);
                 
                 const vencimento = new Date(data.vencimento + 'T12:00:00'); 
                 
                 if (vencimento >= hoje) {
-                    // Calcula os dias restantes
                     const diffTime = Math.abs(vencimento - hoje);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
-                    localStorage.setItem("erp_v18_sub_days", diffDays); // Salva os dias
+                    localStorage.setItem("erp_v18_sub_days", diffDays); 
 
                     ui.hideLoading();
                     ui.toast(`Assinatura ativa até ${vencimento.toLocaleDateString('pt-BR')}`);
@@ -1023,7 +1028,7 @@ const auth = {
             }
         } catch(e) {
             ui.hideLoading();
-            ui.toast("Erro de conexão ao checar assinatura.", "error");
+            ui.toast("Erro de conexão com o banco de dados.", "error");
             this.showBlockedScreen(); 
         }
     },
@@ -1093,11 +1098,10 @@ const auth = {
             secret: this.hash(s.toLowerCase().trim()) 
         }));
         
-        // Remove vínculo do Google caso esteja criando conta local
         localStorage.removeItem("erp_v18_auth_google");
         
         ui.toast('Conta local criada com sucesso!');
-        this.verifySubscription(email); // Valida o e-mail cadastrado na planilha
+        this.verifySubscription(email); 
     },
     
     login() {
@@ -1108,7 +1112,7 @@ const auth = {
         if(!email || !p) return ui.toast('Preencha os campos', 'warning');
 
         if(d && d.email === email && this.hash(p) === d.pass) {
-            localStorage.removeItem("erp_v18_auth_google"); // Prioriza a conta local atual
+            localStorage.removeItem("erp_v18_auth_google"); 
             this.verifySubscription(email);
         } else { 
             ui.toast('E-mail ou Senha incorretos', 'error'); 
@@ -1137,7 +1141,6 @@ const auth = {
         const badge = document.getElementById('user-profile-badge');
         const avatar = document.getElementById('user-avatar');
         
-        // Puxa os dados do Google (se existirem) para o cabeçalho
         if(gData && gData !== "true") {
             try {
                 gData = JSON.parse(gData);
@@ -1146,7 +1149,6 @@ const auth = {
                 avatar.title = `${gData.name} (${gData.email})`;
             } catch(e) {}
         } 
-        // Se não tiver Google, gera um Avatar com a primeira letra do e-mail local
         else if (lData) {
             try {
                 lData = JSON.parse(lData);
@@ -1157,14 +1159,12 @@ const auth = {
             } catch(e) {}
         }
 
-        // Atualiza a interface do "Meu Plano" com os dias salvos
         const dias = localStorage.getItem("erp_v18_sub_days");
         if(dias !== null) {
             document.getElementById('sub-status-box').style.display = 'block';
             const sText = document.getElementById('sub-status-text');
             sText.innerHTML = `<i class="fas fa-clock"></i> ${dias} dias restantes`;
             
-            // Fica vermelho se faltar 5 dias ou menos
             if (parseInt(dias) <= 5) {
                 document.getElementById('sub-status-box').style.background = '#fef2f2';
                 document.getElementById('sub-status-box').style.borderColor = '#fecaca';
@@ -2169,7 +2169,13 @@ const app = {
         };
         
         setTimeout(() => {
-            html2pdf().set(opt).from(el).save().then(() => {
+            html2canvas(el, opt.html2canvas).then(canvas => {
+                const imgData = canvas.toDataURL('image/jpeg', opt.image.quality);
+                const pdf = new jspdf.jsPDF(opt.jsPDF);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
+                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save(opt.filename);
                 if (hadScale) el.classList.add("mobile-preview-scale");
                 ui.hideLoading();
                 ui.toast("Download finalizado com sucesso!");

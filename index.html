@@ -362,7 +362,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
 <div id="menu-overlay" onclick="ui.toggleMenu()"></div>
 
-<!-- MÓDULO DE AUTENTICAÇÃO MODERNIZADO COM VALIDAÇÃO DE ASSINATURA -->
+<!-- MÓDULO DE AUTENTICAÇÃO MODERNIZADO COM VALIDAÇÃO DE ASSINATURA E TRIAL DE 3 DIAS -->
 <div id="auth-overlay">
     
     <!-- ELEMENTOS INVISÍVEIS DE AUTENTICAÇÃO DO GOOGLE -->
@@ -994,23 +994,21 @@ const auth = {
     async verifySubscription(email) {
         ui.showLoading("Verificando assinatura no Banco de Dados...");
         try {
-            // 🚨 AQUI ESTÁ O SEU LINK DO FIREBASE OFICIAL 🚨
             const urlFirebase = "https://erp-pro-master-default-rtdb.firebaseio.com";
-            
-            // Firebase não aceita ponto (.) nas chaves, então substituímos por vírgula (,)
             const emailFormatado = email.replace(/\./g, ',');
-            
             const urlConsulta = `${urlFirebase}/assinaturas/${emailFormatado}.json`;
+            
             const res = await fetch(urlConsulta);
             const data = await res.json();
             
             if (data && data.vencimento) {
+                // O e-mail já existe no banco de dados (pode estar ativo ou vencido)
                 const hoje = new Date();
                 hoje.setHours(0,0,0,0);
-                
                 const vencimento = new Date(data.vencimento + 'T12:00:00'); 
                 
                 if (vencimento >= hoje) {
+                    // Assinatura está em dia
                     const diffTime = Math.abs(vencimento - hoje);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     localStorage.setItem("erp_v18_sub_days", diffDays); 
@@ -1019,12 +1017,30 @@ const auth = {
                     ui.toast(`Assinatura ativa até ${vencimento.toLocaleDateString('pt-BR')}`);
                     this.enter();
                 } else {
+                    // Assinatura está vencida (Não renova o teste grátis)
                     ui.hideLoading();
                     this.showBlockedScreen();
                 }
             } else {
+                // ========================================================
+                // O E-MAIL NÃO EXISTE! É UM NOVO CLIENTE.
+                // VAMOS LIBERAR 3 DIAS DE TESTE AUTOMATICAMENTE.
+                // ========================================================
+                const hoje = new Date();
+                hoje.setDate(hoje.getDate() + 3); // Adiciona 3 dias a partir de hoje
+                const vencimentoString = hoje.toISOString().split('T')[0]; // Converte para YYYY-MM-DD
+                
+                // Grava os 3 dias grátis direto no seu Firebase para este usuário
+                await fetch(urlConsulta, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ vencimento: vencimentoString })
+                });
+
+                localStorage.setItem("erp_v18_sub_days", 3); 
                 ui.hideLoading();
-                this.showBlockedScreen();
+                ui.toast("🎁 3 Dias de Teste Grátis Liberados!");
+                this.enter();
             }
         } catch(e) {
             ui.hideLoading();
@@ -2169,13 +2185,7 @@ const app = {
         };
         
         setTimeout(() => {
-            html2canvas(el, opt.html2canvas).then(canvas => {
-                const imgData = canvas.toDataURL('image/jpeg', opt.image.quality);
-                const pdf = new jspdf.jsPDF(opt.jsPDF);
-                const pdfWidth = pdf.internal.pageSize.getWidth();
-                const pdfHeight = (canvas.height * pdfWidth) / canvas.width;
-                pdf.addImage(imgData, 'JPEG', 0, 0, pdfWidth, pdfHeight);
-                pdf.save(opt.filename);
+            html2pdf().set(opt).from(el).save().then(() => {
                 if (hadScale) el.classList.add("mobile-preview-scale");
                 ui.hideLoading();
                 ui.toast("Download finalizado com sucesso!");

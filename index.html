@@ -99,10 +99,34 @@ body { margin: 0; background: var(--bg-app); color: var(--text-main); overflow-x
 }
 .input-std:focus { background: #fff; border-color: var(--accent); box-shadow: 0 0 0 4px rgba(37,99,235,0.1); outline: none; }
 
-.pin-display { font-size: 36px; letter-spacing: 16px; font-weight: 800; border: 2px solid transparent; background: #f8fafc; border-radius: 16px; padding: 15px; width: 100%; text-align: center; margin-bottom: 20px; color: var(--primary); transition: 0.3s; box-sizing: border-box;}
-.pin-display:focus { border-color: var(--accent); background: #fff; box-shadow: 0 0 0 4px rgba(37,99,235,0.1); outline: none; }
 .auth-link { margin-top: 25px; font-size: 13px; color: var(--text-muted); text-decoration: none; cursor: pointer; font-weight: 600; transition: 0.2s; }
 .auth-link:hover { color: var(--accent); }
+
+/* BOTÃO DE INSTALAÇÃO FLUTUANTE */
+.install-float {
+    position: fixed;
+    bottom: 20px;
+    left: 20px;
+    background: var(--accent);
+    color: white;
+    border-radius: 50px;
+    padding: 12px 20px;
+    display: none; /* Escondido por padrão */
+    align-items: center;
+    gap: 10px;
+    font-weight: 800;
+    font-size: 13px;
+    box-shadow: 0 4px 15px rgba(37,99,235,0.3);
+    z-index: 15000;
+    cursor: pointer;
+    transition: 0.2s;
+    border: none;
+    letter-spacing: 0.5px;
+}
+.install-float:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 20px rgba(37,99,235,0.4);
+}
 
 /* MODALS */
 #import-overlay, #multiselect-overlay, #provider-modal { position: fixed; inset: 0; z-index: 11000; background: rgba(15, 23, 42, 0.6); backdrop-filter: blur(8px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
@@ -467,7 +491,12 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
     <div class="nav-item" style="border-top: 1px solid var(--border); padding-top: 15px;" onclick="ui.tab('e', this)"><i class="fas fa-cog"></i>Ajustes</div>
 </nav>
 
+<!-- BOTOES FLUTUANTES -->
 <a href="https://wa.me/5514991580362" target="_blank" class="whatsapp-float" title="Suporte via WhatsApp" style="position: fixed; bottom: 20px; right: 20px; background: var(--whatsapp); color: white; border-radius: 50%; width: 50px; height: 50px; display: flex; align-items: center; justify-content: center; font-size: 24px; box-shadow: 0 4px 10px rgba(0,0,0,0.2); z-index: 10000; text-decoration: none;"><i class="fab fa-whatsapp"></i></a>
+
+<button id="floating-install-btn" class="install-float" onclick="pwa.install()">
+    <i class="fas fa-download"></i> INSTALAR APP
+</button>
 
 <main id="app-container">
 
@@ -957,6 +986,38 @@ const ui = {
     close() { 
         document.getElementById("preview").style.display = "none"; 
         app.currentDocState = null; 
+    }
+};
+
+const pwa = {
+    deferredPrompt: null,
+    init() {
+        // Escuta o evento oficial do Google Chrome para instalação
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            this.deferredPrompt = e;
+            // Mostra o botão flutuante
+            document.getElementById('floating-install-btn').style.display = 'flex';
+        });
+
+        // Escuta quando o usuário terminar de instalar com sucesso
+        window.addEventListener('appinstalled', (e) => {
+            document.getElementById('floating-install-btn').style.display = 'none';
+            this.deferredPrompt = null;
+            ui.toast("Aplicativo instalado com sucesso!");
+        });
+
+        // Se o app JÁ ESTIVER ABERTO COMO APLICATIVO, esconde o botão
+        if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
+            document.getElementById('floating-install-btn').style.display = 'none';
+        }
+    },
+    async install() {
+        if (!this.deferredPrompt) return;
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        this.deferredPrompt = null;
+        document.getElementById('floating-install-btn').style.display = 'none';
     }
 };
 
@@ -2633,14 +2694,16 @@ const app = {
     }
 };
 
-// Script de instalação PWA (Adicionar à tela inicial)
-if ('serviceWorker' in navigator) {
-  window.addEventListener('load', () => {
-    navigator.serviceWorker.register('sw.js')
-      .then(reg => console.log('PWA ativado com sucesso! Pronto para instalar no celular.'))
-      .catch(err => console.log('Falha ao ativar PWA: ', err));
-  });
-}
+// Ao carregar a página, inicializa o Auth e a instalação do PWA
+window.addEventListener('load', () => {
+    pwa.init();
+    
+    if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('sw.js')
+          .then(reg => console.log('PWA ativado!'))
+          .catch(err => console.log('Falha PWA: ', err));
+    }
+});
 </script>
 </body>
 </html>

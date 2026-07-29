@@ -78,7 +78,7 @@ body { margin: 0; background: var(--bg-app); color: var(--text-main); overflow-x
 .install-float:hover { transform: translateY(-3px); box-shadow: 0 8px 15px rgba(0,0,0,0.15); }
 
 /* MODALS */
-#import-overlay, #multiselect-overlay, #provider-modal { position: fixed; inset: 0; z-index: 11000; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
+#import-overlay, #multiselect-overlay, #provider-modal, #drilldown-modal { position: fixed; inset: 0; z-index: 11000; background: rgba(17, 24, 39, 0.7); backdrop-filter: blur(4px); display: none; flex-direction: column; align-items: center; justify-content: center; padding: 20px; }
 
 /* HEADER */
 header.top-bar { position: fixed; top: 0; left: 0; right: 0; height: 60px; background: var(--surface); display: none; align-items: center; padding: 0 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); z-index: 9000; border-bottom: 1px solid var(--border); }
@@ -140,23 +140,32 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
 .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
 
-/* GRÁFICOS DO DASHBOARD */
+/* GRÁFICOS DO DASHBOARD (Interativos) */
 .chart-container { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .chart-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; display:flex; justify-content:space-between}
-.chart-bar-bg { width: 100%; height: 14px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; }
-.chart-bar-fill { height: 100%; transition: width 1s cubic-bezier(0.4, 0, 0.2, 1); width: 0%; }
+.chart-bar-bg { width: 100%; height: 16px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; }
+.chart-bar-fill { height: 100%; transition: width 1.2s cubic-bezier(0.34, 1.56, 0.64, 1); width: 0%; }
 .fill-green { background: var(--success); }
 .fill-red { background: var(--danger); }
 .chart-legend { display:flex; justify-content:space-between; margin-top:8px; font-size:12px; font-weight:600; }
 
-/* GRID DO DASHBOARD */
+/* GRID DO DASHBOARD INTERATIVOS */
 .dash-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: 15px; margin-bottom: 20px; }
-.dash-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); transition: 0.2s; }
-.dash-card:hover { border-color: #cbd5e1; }
+.dash-card { background: #fff; padding: 20px; border-radius: 12px; border: 1px solid var(--border); transition: 0.3s; position: relative; overflow: hidden; cursor: pointer; }
+.dash-card:hover { border-color: var(--accent); transform: translateY(-4px); box-shadow: 0 10px 15px -3px rgba(0,0,0,0.1); }
+.dash-card::after { content: 'Clique para detalhar e editar \f0a6'; font-family: 'Font Awesome 5 Free'; font-weight: 900; position: absolute; bottom: 5px; right: 10px; font-size: 10px; color: var(--accent); opacity: 0; transition: 0.3s; }
+.dash-card:hover::after { opacity: 1; }
 .dash-val { font-size: 24px; font-weight: 700; margin: 10px 0 4px 0; color: var(--primary); }
 .dash-label { font-size: 12px; color: var(--text-muted); font-weight: 500; display:flex; align-items:center; gap:8px; }
 .val-pos { color: var(--success); }
 .val-neg { color: var(--danger); }
+
+/* DRILLDOWN MODAL (Onde o gráfico mostra de onde vem) */
+.dd-modal-box { background: var(--surface); width: 95%; max-width: 600px; max-height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.3); border: 1px solid rgba(255,255,255,0.1); }
+.dd-header { padding: 20px 25px; background: var(--primary); color: #fff; display: flex; justify-content: space-between; align-items: center; }
+.dd-header h3 { margin: 0; font-size: 16px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.dd-body { flex: 1; overflow-y: auto; padding: 15px; background: #f8fafc; }
+.dd-footer { padding: 15px 25px; background: #fff; border-top: 1px solid var(--border); text-align: right; }
 
 /* IMPORTADOR & MULTI-SELECT */
 .import-modal { background: #fff; width: 95%; max-width: 700px; height: 85vh; border-radius: 16px; display: flex; flex-direction: column; overflow: hidden; box-shadow: 0 25px 50px -12px rgba(0,0,0,0.25); }
@@ -347,6 +356,22 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
     </div>
 </div>
 
+<!-- MODAL DRILL-DOWN (Exibe origem dos dados) -->
+<div id="drilldown-modal">
+    <div class="dd-modal-box">
+        <div class="dd-header">
+            <h3 id="dd-title"><i class="fas fa-list"></i> Detalhamento</h3>
+            <button onclick="document.getElementById('drilldown-modal').style.display='none'; history.pushState(null, null, window.location.pathname);" style="background:none; border:none; color:#fff; font-size:22px; cursor:pointer">&times;</button>
+        </div>
+        <div id="dd-content" class="dd-body">
+            <!-- Lista entra aqui -->
+        </div>
+        <div class="dd-footer">
+            <b id="dd-total" style="color:var(--primary); font-size:18px;">Total: R$ 0,00</b>
+        </div>
+    </div>
+</div>
+
 <nav id="nav-bar">
     <div class="nav-brand">
         <div class="nav-brand-title">ERP Pro</div>
@@ -398,22 +423,22 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         </div>
 
         <div class="dash-grid">
-            <div class="dash-card">
+            <div class="dash-card" onclick="app.showDrillDown('vendas')">
                 <div class="dash-label"><i class="fas fa-arrow-up" style="color:var(--success)"></i> Vendas Realizadas</div>
                 <div class="dash-val val-pos" id="dash-vendas">R$ 0,00</div>
             </div>
-            <div class="dash-card">
+            <div class="dash-card" onclick="app.showDrillDown('alugueis')">
                 <div class="dash-label"><i class="fas fa-arrow-up" style="color:var(--success)"></i> Aluguéis Recebidos</div>
                 <div class="dash-val val-pos" id="dash-alugueis">R$ 0,00</div>
             </div>
         </div>
 
         <div class="dash-grid">
-            <div class="dash-card">
+            <div class="dash-card" onclick="app.showDrillDown('compras')">
                 <div class="dash-label"><i class="fas fa-arrow-down" style="color:var(--danger)"></i> Compras & Gastos</div>
                 <div class="dash-val val-neg" id="dash-compras">R$ 0,00</div>
             </div>
-            <div class="dash-card">
+            <div class="dash-card" onclick="app.showDrillDown('equipe')">
                 <div class="dash-label"><i class="fas fa-arrow-down" style="color:var(--danger)"></i> Pagamento de Equipe</div>
                 <div class="dash-val val-neg" id="dash-equipe">R$ 0,00</div>
             </div>
@@ -425,7 +450,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         </div>
 
         <div class="dash-grid">
-            <div class="dash-card" style="border-left: 4px solid var(--accent)">
+            <div class="dash-card" onclick="app.showDrillDown('orcamentos')" style="border-left: 4px solid var(--accent)">
                 <div class="dash-label"><i class="fas fa-file-invoice" style="color:var(--accent)"></i> Orçamentos em Aberto</div>
                 <div class="dash-val" style="color:var(--accent)" id="dash-orcamentos">R$ 0,00</div>
             </div>
@@ -745,6 +770,11 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         </div>
 
         <div class="help-card">
+            <h3><i class="fas fa-chart-pie"></i> Dashboard Interativo</h3>
+            <p>Todos os cartões do seu Resumo Financeiro (Início) são clicáveis! Ao clicar em um valor como "Vendas Realizadas", você abre a origem dos dados: uma lista mostrando exatamente quais clientes e quais notas formam aquele saldo. Você pode clicar no lápis ao lado para corrigir e alterar diretamente o valor de origem.</p>
+        </div>
+
+        <div class="help-card">
             <h3><i class="fas fa-calendar-alt"></i> Agenda Inteligente & GPS</h3>
             <p>A aba <b>Agenda</b> permite salvar compromissos e vincular aos seus clientes. Se o cliente tiver endereço cadastrado (ou se você pegou a localização pelo celular), aparecerá um botão <b>"Traçar Rota no GPS"</b> para você abrir a rota no Google Maps saindo da sua localização atual direto para o cliente.</p>
             <p><b>Dica:</b> Ao criar a agenda, clique no botão <i class="fas fa-crosshairs"></i> para pegar a sua posição GPS atual e salvar a localização exata de uma obra, por exemplo!</p>
@@ -1004,7 +1034,6 @@ const auth = {
     async verifySubscription(email) {
         ui.showLoading("Verificando assinatura no Banco de Dados...");
         
-        // --- NOVO: VERIFICAÇÃO OFFLINE ---
         if (!navigator.onLine) {
             const dias = parseInt(localStorage.getItem("erp_v18_sub_days"));
             if (dias && dias > 0) {
@@ -1049,7 +1078,6 @@ const auth = {
                 this.enter();
             }
         } catch(e) {
-            // Fallback de emergência (caso a internet caia no meio do processo)
             const dias = parseInt(localStorage.getItem("erp_v18_sub_days"));
             if (dias && dias > 0) {
                 ui.hideLoading();
@@ -1136,7 +1164,6 @@ const auth = {
         document.getElementById('nav-bar').style.display = 'flex'; 
         document.getElementById('app-container').style.display = 'block';
         
-        // Empurra o estado inicial para controlar o botão voltar
         history.pushState(null, null, window.location.pathname);
 
         let gData = localStorage.getItem("erp_v18_auth_google");
@@ -1165,9 +1192,9 @@ const auth = {
 
 window.handleGoogleLogin = function(response) { auth.handleGoogleCallback(response); };
 
-// CONTROLE INTELIGENTE DO BOTÃO VOLTAR (ANDROID/NAVEGADOR)
+// CONTROLE INTELIGENTE DO BOTÃO VOLTAR
 window.addEventListener('popstate', function (e) {
-    if(document.getElementById('auth-overlay').style.display !== 'none') return; // Se não logou, ignora
+    if(document.getElementById('auth-overlay').style.display !== 'none') return; 
 
     if(document.getElementById('preview').style.display === 'flex') {
         ui.close();
@@ -1175,7 +1202,7 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal'];
+    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal', 'drilldown-modal'];
     for(let m of modals) {
         const el = document.getElementById(m);
         if(el && el.style.display === 'flex') {
@@ -1198,9 +1225,8 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    // --- NOVA MENSAGEM DO BOTÃO SAIR ---
     if (confirm("Deseja sair do aplicativo ou Voltar ao Início?\n\n- Pressione OK para Sair\n- Pressione CANCELAR para Voltar ao Início")) {
-        // Deixa a ação nativa acontecer e fecha o app
+        // Deixa fechar nativamente
     } else {
         history.pushState(null, null, window.location.pathname);
     }
@@ -1487,6 +1513,71 @@ const app = {
         }, 100);
     },
 
+    // --- NOVA FUNÇÃO: DRILL DOWN (Origem dos Dados) ---
+    showDrillDown(type) {
+        const modal = document.getElementById('drilldown-modal');
+        const content = document.getElementById('dd-content');
+        const title = document.getElementById('dd-title');
+        const totalEl = document.getElementById('dd-total');
+        let html = '';
+        let total = 0;
+
+        if (type === 'vendas') {
+            title.innerHTML = '<i class="fas fa-arrow-up"></i> Detalhamento: Vendas Realizadas';
+            this.docs.forEach(d => {
+                if(d.typeTitle === 'PEDIDO DE VENDA' || d.typeTitle === 'RECIBO OFICIAL') {
+                    total += d.total;
+                    html += `<div class="list-item"><div class="list-info"><b>${d.clientName}</b><br><span style="font-size:11px">${d.numero} - ${new Date(d.id).toLocaleDateString('pt-BR')}</span></div><div><b style="color:var(--success)">${BRL.format(d.total)}</b></div><button class="btn-icon btn-edit" onclick="document.getElementById('drilldown-modal').style.display='none'; ui.tab('v'); setTimeout(()=>app.editSavedDoc(${d.id}), 300);"><i class="fas fa-pen"></i></button></div>`;
+                }
+            });
+        } 
+        else if (type === 'alugueis') {
+            title.innerHTML = '<i class="fas fa-home"></i> Detalhamento: Aluguéis (Pagos)';
+            this.rentals.forEach(r => {
+                if(r.status === 'Pago') {
+                    total += r.valor;
+                    html += `<div class="list-item"><div class="list-info"><b>${r.inquilino}</b><br><span style="font-size:11px">${r.descricao} - Recebido em: ${r.dataPgto ? new Date(r.dataPgto + 'T12:00:00').toLocaleDateString('pt-BR') : ''}</span></div><div><b style="color:var(--success)">${BRL.format(r.valor)}</b></div><button class="btn-icon btn-edit" onclick="document.getElementById('drilldown-modal').style.display='none'; ui.tab('r'); setTimeout(()=>app.editRental(${r.id}), 300);"><i class="fas fa-pen"></i></button></div>`;
+                }
+            });
+        }
+        else if (type === 'compras') {
+            title.innerHTML = '<i class="fas fa-arrow-down"></i> Detalhamento: Compras e Gastos';
+            this.docs.forEach(d => {
+                if(d.typeTitle === 'PEDIDO DE COMPRA') {
+                    total += d.total;
+                    html += `<div class="list-item"><div class="list-info"><b>${d.clientName}</b><br><span style="font-size:11px">${d.numero} - ${new Date(d.id).toLocaleDateString('pt-BR')}</span></div><div><b style="color:var(--danger)">${BRL.format(d.total)}</b></div><button class="btn-icon btn-edit" onclick="document.getElementById('drilldown-modal').style.display='none'; ui.tab('v'); setTimeout(()=>app.editSavedDoc(${d.id}), 300);"><i class="fas fa-pen"></i></button></div>`;
+                }
+            });
+        }
+        else if (type === 'equipe') {
+            title.innerHTML = '<i class="fas fa-hard-hat"></i> Detalhamento: Pagamento de Equipe';
+            this.providers.forEach(p => {
+                if(p.pagamentos && p.pagamentos.length > 0) {
+                    p.pagamentos.forEach(pg => {
+                        total += pg.valor;
+                        html += `<div class="list-item"><div class="list-info"><b>${p.nome}</b><br><span style="font-size:11px">${pg.desc} - ${new Date(pg.data + 'T12:00:00').toLocaleDateString('pt-BR')}</span></div><div><b style="color:var(--danger)">${BRL.format(pg.valor)}</b></div><button class="btn-icon btn-manage" onclick="document.getElementById('drilldown-modal').style.display='none'; ui.tab('p'); setTimeout(()=>app.manageProvider(${p.id}), 300);"><i class="fas fa-wallet"></i></button></div>`;
+                    });
+                }
+            });
+        }
+        else if (type === 'orcamentos') {
+            title.innerHTML = '<i class="fas fa-file-invoice"></i> Detalhamento: Orçamentos em Aberto';
+            this.docs.forEach(d => {
+                if(d.typeTitle === 'ORÇAMENTO') {
+                    total += d.total;
+                    html += `<div class="list-item"><div class="list-info"><b>${d.clientName}</b><br><span style="font-size:11px">${d.numero} - ${new Date(d.id).toLocaleDateString('pt-BR')}</span></div><div><b style="color:var(--accent)">${BRL.format(d.total)}</b></div><button class="btn-icon btn-edit" onclick="document.getElementById('drilldown-modal').style.display='none'; ui.tab('v'); setTimeout(()=>app.editSavedDoc(${d.id}), 300);"><i class="fas fa-pen"></i></button></div>`;
+                }
+            });
+        }
+
+        if(html === '') html = '<div style="text-align:center; padding:30px; color:var(--text-muted)">Nenhum registro encontrado.</div>';
+        
+        content.innerHTML = html;
+        totalEl.innerText = 'Total: ' + BRL.format(total);
+        modal.style.display = 'flex';
+        history.pushState(null, null, window.location.pathname);
+    },
+
     load() {
         const tx = db.transaction(["clients","items","config", "docs", "providers", "rentals"], "readonly");
         
@@ -1727,6 +1818,7 @@ const app = {
         if(!p.pagamentos) p.pagamentos = []; if(!p.notas) p.notas = "";
         document.getElementById("pm-id").value = p.id; document.getElementById("pm-header-name").innerText = `${p.nome} (${p.funcao})`; document.getElementById("pm-notas").value = p.notas; document.getElementById("pm-p-data").value = new Date().toISOString().split('T')[0]; document.getElementById("pm-p-valor").value = ""; document.getElementById("pm-p-desc").value = "";
         this.renderProviderPaymentsList(p); document.getElementById("provider-modal").style.display = "flex";
+        history.pushState(null, null, window.location.pathname);
     },
     saveProviderNotes() { const id = parseInt(document.getElementById("pm-id").value); const p = this.providers.find(x => x.id === id); if(!p) return; p.notas = document.getElementById("pm-notas").value; db.transaction("providers", "readwrite").objectStore("providers").put(p).onsuccess = () => { ui.toast("Anotações atualizadas!"); this.load(); }; },
     addProviderPayment() {
@@ -1804,6 +1896,7 @@ const app = {
             });
         }
         document.getElementById('multiselect-overlay').style.display = 'flex'; if(searchInput) setTimeout(() => searchInput.focus(), 100);
+        history.pushState(null, null, window.location.pathname);
     },
     confirmMultiSelect() {
         const checked = document.querySelectorAll('.ms-check:checked'); let count = 0;
@@ -2058,7 +2151,7 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal'];
+    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal', 'drilldown-modal'];
     for(let m of modals) {
         const el = document.getElementById(m);
         if(el && el.style.display === 'flex') {
@@ -2081,8 +2174,9 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    if (confirm("Deseja sair do aplicativo ou Voltar ao Início?\n\n- Pressione OK para Sair\n- Pressione CANCELAR para Voltar ao Início")) {
-        // Deixa a ação nativa acontecer
+    // --- MENSAGEM CLARA NO BOTÃO VOLTAR ---
+    if (confirm("Deseja fechar o aplicativo?\n\n- [ OK ] Sair do aplicativo\n- [ Cancelar ] Continuar aqui")) {
+        // Deixa fechar nativamente
     } else {
         history.pushState(null, null, window.location.pathname);
     }

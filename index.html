@@ -919,6 +919,13 @@ const pwa = {
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             document.getElementById('floating-install-btn').style.display = 'none';
         }
+    },
+    async install() {
+        if (!this.deferredPrompt) return;
+        this.deferredPrompt.prompt();
+        const { outcome } = await this.deferredPrompt.userChoice;
+        this.deferredPrompt = null;
+        document.getElementById('floating-install-btn').style.display = 'none';
     }
 };
 
@@ -996,6 +1003,22 @@ const auth = {
     },
     async verifySubscription(email) {
         ui.showLoading("Verificando assinatura no Banco de Dados...");
+        
+        // --- NOVO: VERIFICAÇÃO OFFLINE ---
+        if (!navigator.onLine) {
+            const dias = parseInt(localStorage.getItem("erp_v18_sub_days"));
+            if (dias && dias > 0) {
+                ui.hideLoading();
+                ui.toast("Modo Offline Ativado. Assinatura válida no aparelho.", "warning");
+                this.enter();
+            } else {
+                ui.hideLoading();
+                ui.toast("Sem conexão com a internet para validar a assinatura.", "error");
+                this.showBlockedScreen();
+            }
+            return;
+        }
+
         try {
             const urlFirebase = "https://erp-pro-master-default-rtdb.firebaseio.com";
             const emailFormatado = email.replace(/\./g, ',');
@@ -1026,9 +1049,17 @@ const auth = {
                 this.enter();
             }
         } catch(e) {
-            ui.hideLoading();
-            ui.toast("Erro de conexão com o banco de dados.", "error");
-            this.showBlockedScreen(); 
+            // Fallback de emergência (caso a internet caia no meio do processo)
+            const dias = parseInt(localStorage.getItem("erp_v18_sub_days"));
+            if (dias && dias > 0) {
+                ui.hideLoading();
+                ui.toast("Modo Offline de Emergência Ativado.", "warning");
+                this.enter();
+            } else {
+                ui.hideLoading();
+                ui.toast("Erro de conexão com o banco de dados.", "error");
+                this.showBlockedScreen(); 
+            }
         }
     },
     showBlockedScreen() { this.switch('blocked'); },
@@ -1167,7 +1198,8 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    if (confirm("Deseja mesmo sair do aplicativo?")) {
+    // --- NOVA MENSAGEM DO BOTÃO SAIR ---
+    if (confirm("Deseja sair do aplicativo ou Voltar ao Início?\n\n- Pressione OK para Sair\n- Pressione CANCELAR para Voltar ao Início")) {
         // Deixa a ação nativa acontecer e fecha o app
     } else {
         history.pushState(null, null, window.location.pathname);
@@ -1439,7 +1471,6 @@ const app = {
         saldoEl.innerText = BRL.format(saldo);
         if(saldo < 0) { saldoEl.style.color = '#f87171'; } else { saldoEl.style.color = '#4ade80'; }
 
-        // Gráfico Animado Inteligente
         const totalRec = totVen + totAlug;
         const totalDesp = totComp + totEquipe;
         const sum = totalRec + totalDesp;
@@ -1801,7 +1832,6 @@ const app = {
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = '<i class="fas fa-file-pdf"></i> Fazer Download PDF'; btnConfirm.onclick = () => { app.downloadJustPDF(); };
         document.getElementById("preview").style.display = "flex";
         
-        // Empurra o estado para fechar com botão voltar do celular
         history.pushState(null, null, window.location.pathname);
     },
 
@@ -2051,7 +2081,7 @@ window.addEventListener('popstate', function (e) {
         return;
     }
 
-    if (confirm("Deseja mesmo sair do aplicativo?")) {
+    if (confirm("Deseja sair do aplicativo ou Voltar ao Início?\n\n- Pressione OK para Sair\n- Pressione CANCELAR para Voltar ao Início")) {
         // Deixa a ação nativa acontecer
     } else {
         history.pushState(null, null, window.location.pathname);

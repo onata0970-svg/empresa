@@ -23,10 +23,10 @@
 <style>
 /* --- ESTILOS GERAIS PROFISSIONAIS E MINIMALISTAS --- */
 :root {
-    --primary: #111827; /* Preto moderno */
-    --accent: #2563eb;  /* Azul confiança */
+    --primary: #111827;
+    --accent: #2563eb;
     --accent-hover: #1d4ed8;
-    --bg-app: #f8fafc;  /* Fundo super claro */
+    --bg-app: #f8fafc;
     --surface: #ffffff;
     --border: #e2e8f0;
     --text-main: #1f2937;
@@ -140,7 +140,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
 .input-row { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
 
-/* GRÁFICOS DO DASHBOARD (Novidade) */
+/* GRÁFICOS DO DASHBOARD */
 .chart-container { background: #fff; border: 1px solid var(--border); border-radius: 16px; padding: 20px; margin-bottom: 20px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); }
 .chart-title { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; margin-bottom: 15px; display:flex; justify-content:space-between}
 .chart-bar-bg { width: 100%; height: 14px; background: #f1f5f9; border-radius: 8px; overflow: hidden; display: flex; }
@@ -169,6 +169,15 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .multi-select-row:hover { border-color: #cbd5e1; }
 .ms-check { width: 20px; height: 20px; accent-color: var(--accent); cursor: pointer; margin:0;}
 .import-footer { padding: 20px 25px; border-top: 1px solid var(--border); background: #fff; display: flex; justify-content: flex-end; gap: 10px; }
+
+/* AGENDA */
+.agenda-card { border-left: 6px solid var(--accent); background: #fff; margin-bottom: 15px; border-radius: 12px; box-shadow: 0 1px 3px rgba(0,0,0,0.05); border: 1px solid var(--border); border-left-width: 5px; overflow: hidden; transition: 0.2s; }
+.agenda-card:hover { border-color: #cbd5e1; }
+.agenda-head { padding: 15px 20px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px dashed var(--border); }
+.agenda-date { background: #eff6ff; color: var(--accent); padding: 8px 12px; border-radius: 8px; font-weight: 700; font-size: 13px; text-align: center; line-height: 1.3; }
+.agenda-body { padding: 15px 20px; }
+.agenda-map-box { height: 160px; background: #e2e8f0; margin-top: 15px; border-radius: 10px; overflow: hidden; position: relative; }
+.map-iframe { width: 100%; height: 100%; border: 0; }
 
 /* RESPONSIVIDADE */
 @media (max-width: 768px) {
@@ -345,7 +354,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
     </div>
     
     <div style="margin-top: 10px; overflow-y: auto; flex: 1;">
-        <div class="nav-item active" onclick="ui.tab('f', this)"><i class="fas fa-chart-pie"></i>Dashboard</div>
+        <div class="nav-item active" onclick="ui.tab('f', this)"><i class="fas fa-chart-pie"></i>Início</div>
         <div class="nav-item" onclick="ui.tab('v', this)"><i class="fas fa-file-invoice"></i>Gerar Faturamento</div>
         <div class="nav-item" onclick="ui.tab('d', this)"><i class="fas fa-folder-open"></i>Histórico & Docs</div>
         <div class="nav-item" onclick="ui.tab('a', this)"><i class="fas fa-calendar-alt"></i>Agenda</div>
@@ -373,7 +382,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 <main id="app-container">
 
     <section id="f">
-        <div class="section-header">Dashboard Financeiro</div>
+        <div class="section-header">Início - Resumo Financeiro</div>
         
         <!-- GRÁFICO INTELIGENTE -->
         <div class="chart-container">
@@ -573,8 +582,13 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
             </div>
             <label>Vincular Cliente</label>
             <select id="ag-client" onchange="agenda.fillAddress(this)"><option value="">-- Avulso --</option></select>
-            <label>Localização (Rua, Número, Cidade)</label>
-            <input id="ag-address" placeholder="Endereço para o GPS">
+            
+            <label>Localização (Rua, Número, Cidade ou Coordenadas)</label>
+            <div style="display:flex; gap:10px; margin-bottom:20px;">
+                <input id="ag-address" placeholder="Endereço para o GPS" style="margin-bottom:0; flex:1;">
+                <button class="btn" style="background:var(--info); color:#fff; width:54px; padding:0; border-radius:10px; margin-bottom:0;" onclick="agenda.getGPS()" title="Capturar Localização Atual"><i class="fas fa-crosshairs" style="font-size:18px;"></i></button>
+            </div>
+            
             <label>Anotações</label>
             <textarea id="ag-obs" rows="2"></textarea>
             <button class="btn btn-primary" onclick="agenda.save()">Salvar Compromisso</button>
@@ -706,7 +720,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         
         <div class="help-card">
             <h3><i class="fas fa-rocket"></i> Primeiros Passos</h3>
-            <p>Antes de gerar qualquer documento, vá na aba <b>Ajustes</b> e configure o Logotipo da sua empresa, Razão Social, Documento, seus Dados Bancários e sua Chave PIX. Essas informações sairão em todos os seus PDFs automaticamente.</p>
+            <p>Antes de gerar qualquer documento, vá na aba <b>Ajustes</b> e configure o Logotipo da sua empresa, Razão Social, Documento, seus Dados Bancários e sua Chave PIX. Estas informações sairão em todos os seus PDFs automaticamente.</p>
         </div>
 
         <div class="help-card">
@@ -716,7 +730,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
                 <li><b>Orçamento / Pedido de Venda:</b> Para cobrar o cliente. Os valores entram como receita no Dashboard.</li>
                 <li><b>Pedido de Compra:</b> Para fornecedores. Os valores entram como gastos/despesas.</li>
                 <li><b>Lista de Materiais:</b> Gera um PDF com quantidades, sem mostrar preços. Ideal para entregar na loja.</li>
-                <li><b>Laudo Técnico:</b> Exige o preenchimento do CREA/Registro e permite anexar fotos das condições encontradas no local.</li>
+                <li><b>Laudo Técnico:</b> Exige o preenchimento do CREA/Registro e permite anexar fotos.</li>
             </ul>
         </div>
 
@@ -731,8 +745,9 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         </div>
 
         <div class="help-card">
-            <h3><i class="fas fa-calendar-alt"></i> Agenda Inteligente</h3>
-            <p>A aba <b>Agenda</b> permite salvar compromissos e vincular aos seus clientes. Se o cliente tiver endereço cadastrado, aparecerá um botão <b>"Navegar no GPS"</b> para você abrir a rota direta.</p>
+            <h3><i class="fas fa-calendar-alt"></i> Agenda Inteligente & GPS</h3>
+            <p>A aba <b>Agenda</b> permite salvar compromissos e vincular aos seus clientes. Se o cliente tiver endereço cadastrado (ou se você pegou a localização pelo celular), aparecerá um botão <b>"Traçar Rota no GPS"</b> para você abrir a rota no Google Maps saindo da sua localização atual direto para o cliente.</p>
+            <p><b>Dica:</b> Ao criar a agenda, clique no botão <i class="fas fa-crosshairs"></i> para pegar a sua posição GPS atual e salvar a localização exata de uma obra, por exemplo!</p>
         </div>
     </section>
 
@@ -850,7 +865,6 @@ const ui = {
         const sec = document.getElementById(id);
         sec.style.display = "block";
         
-        // Animação leve de entrada
         sec.style.opacity = '0';
         sec.style.transform = 'translateY(10px)';
         setTimeout(() => {
@@ -905,17 +919,9 @@ const pwa = {
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             document.getElementById('floating-install-btn').style.display = 'none';
         }
-    },
-    async install() {
-        if (!this.deferredPrompt) return;
-        this.deferredPrompt.prompt();
-        const { outcome } = await this.deferredPrompt.userChoice;
-        this.deferredPrompt = null;
-        document.getElementById('floating-install-btn').style.display = 'none';
     }
 };
 
-// MOTOR DE NOTIFICAÇÕES LOCAIS
 const notifier = {
     async requestPermission() {
         if (!("Notification" in window)) {
@@ -1099,6 +1105,9 @@ const auth = {
         document.getElementById('nav-bar').style.display = 'flex'; 
         document.getElementById('app-container').style.display = 'block';
         
+        // Empurra o estado inicial para controlar o botão voltar
+        history.pushState(null, null, window.location.pathname);
+
         let gData = localStorage.getItem("erp_v18_auth_google");
         let lData = localStorage.getItem("erp_v18_auth");
         const badge = document.getElementById('user-profile-badge');
@@ -1124,6 +1133,46 @@ const auth = {
 };
 
 window.handleGoogleLogin = function(response) { auth.handleGoogleCallback(response); };
+
+// CONTROLE INTELIGENTE DO BOTÃO VOLTAR (ANDROID/NAVEGADOR)
+window.addEventListener('popstate', function (e) {
+    if(document.getElementById('auth-overlay').style.display !== 'none') return; // Se não logou, ignora
+
+    if(document.getElementById('preview').style.display === 'flex') {
+        ui.close();
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal'];
+    for(let m of modals) {
+        const el = document.getElementById(m);
+        if(el && el.style.display === 'flex') {
+            el.style.display = 'none';
+            history.pushState(null, null, window.location.pathname);
+            return;
+        }
+    }
+
+    if(document.getElementById('nav-bar').style.transform === 'translateX(0px)') {
+        ui.toggleMenu();
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    const abaInicio = document.getElementById('f');
+    if (abaInicio.style.display === 'none') {
+        ui.tab('f', document.querySelectorAll('.nav-item')[0]);
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    if (confirm("Deseja mesmo sair do aplicativo?")) {
+        // Deixa a ação nativa acontecer e fecha o app
+    } else {
+        history.pushState(null, null, window.location.pathname);
+    }
+});
 
 const backup = {
     async download(withEmail) {
@@ -1184,6 +1233,27 @@ const backup = {
 };
 
 const agenda = {
+    getGPS() {
+        ui.showLoading("Buscando satélites...");
+        if (navigator.geolocation) {
+            navigator.geolocation.getCurrentPosition(
+                (pos) => {
+                    ui.hideLoading();
+                    document.getElementById('ag-address').value = `${pos.coords.latitude}, ${pos.coords.longitude}`;
+                    ui.toast("GPS capturado com sucesso!");
+                },
+                (err) => {
+                    ui.hideLoading();
+                    ui.toast("Ative o GPS do celular e dê permissão.", "error");
+                },
+                { enableHighAccuracy: true }
+            );
+        } else {
+            ui.hideLoading();
+            ui.toast("GPS não suportado.", "error");
+        }
+    },
+
     save() {
         const date = document.getElementById('ag-date').value;
         const time = document.getElementById('ag-time').value;
@@ -1211,12 +1281,13 @@ const agenda = {
                 const dateObj = new Date(ev.date + 'T' + ev.time);
                 const day = dateObj.toLocaleDateString('pt-BR', {day:'2-digit', month:'short'});
                 const week = dateObj.toLocaleDateString('pt-BR', {weekday:'short'});
-                const mapLink = `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(ev.address)}`;
+                
+                const mapLink = `https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(ev.address)}`;
                 const embedMap = `https://maps.google.com/maps?q=${encodeURIComponent(ev.address)}&t=&z=15&ie=UTF8&iwloc=&output=embed`;
                 const html = `
                 <div class="agenda-card">
                     <div class="agenda-head"><div class="agenda-date">${day}<br>${week}</div><div style="flex:1; margin-left:15px"><div style="font-weight:700; color:var(--primary); font-size:15px;">${ev.clientName}</div><div style="font-size:12px; color:var(--text-muted); margin-top:2px;">${ev.type} às ${ev.time}</div></div><button class="btn-icon btn-delete" onclick="agenda.del(${ev.id})"><i class="fas fa-trash"></i></button></div>
-                    <div class="agenda-body">${ev.obs ? `<div style="font-size:12px; color:var(--text-muted); margin-bottom:10px; padding:10px; background:#f8fafc; border-radius:8px;">${ev.obs}</div>` : ''}${ev.address ? `<div style="font-size:12px; font-weight:600; color:var(--primary); margin-bottom:8px;"><i class="fas fa-map-marker-alt" style="color:var(--accent)"></i> ${ev.address}</div><div class="agenda-map-box"><iframe class="map-iframe" src="${embedMap}"></iframe></div><a href="${mapLink}" target="_blank" class="btn" style="display:inline-block; margin-top:10px; background:#eff6ff; color:var(--accent); text-decoration:none;"><i class="fas fa-location-arrow"></i> Navegar no GPS</a>` : ''}</div>
+                    <div class="agenda-body">${ev.obs ? `<div style="font-size:12px; color:var(--text-muted); margin-bottom:10px; padding:10px; background:#f8fafc; border-radius:8px;">${ev.obs}</div>` : ''}${ev.address ? `<div style="font-size:12px; font-weight:600; color:var(--primary); margin-bottom:8px;"><i class="fas fa-map-marker-alt" style="color:var(--accent)"></i> ${ev.address}</div><div class="agenda-map-box"><iframe class="map-iframe" src="${embedMap}"></iframe></div><a href="${mapLink}" target="_blank" class="btn" style="display:inline-block; margin-top:10px; background:#eff6ff; color:var(--accent); text-decoration:none;"><i class="fas fa-route"></i> Traçar Rota no GPS</a>` : ''}</div>
                 </div>`;
                 container.innerHTML += html;
             });
@@ -1343,7 +1414,7 @@ const app = {
         }
     },
     
-    // ANIMAÇÃO E RENDERIZAÇÃO DO DASHBOARD (Apenas renderiza na aba 'f')
+    // ANIMAÇÃO E RENDERIZAÇÃO DO DASHBOARD
     renderDashboard() {
         let totOrc = 0, totVen = 0, totComp = 0, totAlug = 0, totEquipe = 0;
         
@@ -1373,12 +1444,8 @@ const app = {
         const totalDesp = totComp + totEquipe;
         const sum = totalRec + totalDesp;
         let pRec = 50, pDesp = 50;
-        if(sum > 0) {
-            pRec = (totalRec / sum) * 100;
-            pDesp = (totalDesp / sum) * 100;
-        } else {
-            pRec = 0; pDesp = 0;
-        }
+        if(sum > 0) { pRec = (totalRec / sum) * 100; pDesp = (totalDesp / sum) * 100; } 
+        else { pRec = 0; pDesp = 0; }
         
         document.getElementById('chart-rec').style.width = '0%';
         document.getElementById('chart-desp').style.width = '0%';
@@ -1478,7 +1545,6 @@ const app = {
             let displayVal = BRL.format(d.total);
             if (d.typeTitle === 'RELATÓRIO DE AGENDA' || d.typeTitle === 'LISTA DE MATERIAIS' || d.typeTitle === 'LAUDO TÉCNICO') displayVal = `<span style="font-size:12px; color:var(--text-muted)">Documento Técnico</span>`;
             
-            // NOVO: BOTAO DE APROVAR ORÇAMENTO
             let aprovarBtn = '';
             if(d.typeTitle === 'ORÇAMENTO') {
                 aprovarBtn = `<button class="btn-icon" style="background:#dcfce7; color:#16a34a" onclick="app.approveQuote(${d.id})" title="Aprovar Orçamento"><i class="fas fa-check"></i></button>`;
@@ -1505,7 +1571,6 @@ const app = {
         }).join("");
     },
 
-    // --- NOVA FUNÇÃO DE APROVAR ORÇAMENTO ---
     approveQuote(id) {
         if(!confirm("Aprovar Orçamento?\n\nEle será transformado em 'Pedido de Venda' e o valor entrará como receita no seu Dashboard.")) return;
         const doc = this.docs.find(d => d.id === id);
@@ -1513,13 +1578,8 @@ const app = {
             doc.typeTitle = 'PEDIDO DE VENDA';
             doc.docSelect = 'pedido_venda';
             doc.numero = doc.numero.replace('ORC', 'PDV');
-            // Atualiza o HTML interno gerado para trocar o titulo
             doc.html = doc.html.replace(/ORÇAMENTO/g, "PEDIDO DE VENDA").replace(/ORC-/g, "PDV-");
-            
-            db.transaction("docs","readwrite").objectStore("docs").put(doc).onsuccess = () => {
-                ui.toast("Orçamento Aprovado com Sucesso!");
-                this.load(); // Recarrega os dados e os gráficos
-            };
+            db.transaction("docs","readwrite").objectStore("docs").put(doc).onsuccess = () => { ui.toast("Orçamento Aprovado com Sucesso!"); this.load(); };
         }
     },
 
@@ -1653,9 +1713,9 @@ const app = {
     },
     renderProviderPaymentsList(p) {
         const container = document.getElementById("pm-payments-list");
-        if(!p.pagamentos || p.pagamentos.length === 0) { container.innerHTML = '<div style="text-align:center; padding:15px; color:#94a3b8; font-size:12px">Histórico limpo.</div>'; return; }
+        if(!p.pagamentos || p.pagamentos.length === 0) { container.innerHTML = '<div style="text-align:center; padding:15px; color:#9ca3af; font-size:12px">Histórico limpo.</div>'; return; }
         let sorted = [...p.pagamentos].sort((a,b) => new Date(b.data) - new Date(a.data));
-        container.innerHTML = sorted.map(pg => `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 15px; border:none; border-radius:12px; margin-bottom:8px; background:#f8fafc"><div><div style="font-weight:800; color:var(--success); font-size:14px">${BRL.format(pg.valor)}</div><div style="font-size:12px; color:var(--text-muted); font-weight:500;">${new Date(pg.data + 'T12:00:00').toLocaleDateString('pt-BR')} - ${pg.desc}</div></div><button class="btn-icon btn-delete" style="background:#fee2e2" onclick="app.deleteProviderPayment(${p.id}, ${pg.id})"><i class="fas fa-times"></i></button></div>`).join("");
+        container.innerHTML = sorted.map(pg => `<div style="display:flex; justify-content:space-between; align-items:center; padding:12px 15px; border:none; border-radius:12px; margin-bottom:8px; background:#f8fafc"><div><div style="font-weight:700; color:var(--success); font-size:14px">${BRL.format(pg.valor)}</div><div style="font-size:12px; color:var(--text-muted); font-weight:500;">${new Date(pg.data + 'T12:00:00').toLocaleDateString('pt-BR')} - ${pg.desc}</div></div><button class="btn-icon btn-delete" style="background:#fee2e2; color:var(--danger);" onclick="app.deleteProviderPayment(${p.id}, ${pg.id})"><i class="fas fa-times"></i></button></div>`).join("");
     },
 
     saveRental() {
@@ -1740,9 +1800,11 @@ const app = {
         document.getElementById("pdf-box").innerHTML = doc.html; document.getElementById("pdf-box").className = "mobile-preview-scale";
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = '<i class="fas fa-file-pdf"></i> Fazer Download PDF'; btnConfirm.onclick = () => { app.downloadJustPDF(); };
         document.getElementById("preview").style.display = "flex";
+        
+        // Empurra o estado para fechar com botão voltar do celular
+        history.pushState(null, null, window.location.pathname);
     },
 
-    /* --- GERAÇÃO DE PDF EM ALTA RESOLUÇÃO --- */
     downloadJustPDF() {
         ui.showLoading("Gerando Arquivo em Alta Qualidade...");
         const el = document.getElementById("pdf-box");
@@ -1756,7 +1818,6 @@ const app = {
             margin: 0, 
             filename: filename, 
             image: { type: 'jpeg', quality: 1 }, 
-            // Scale aumentado para 4 para altissima qualidade na logo
             html2canvas: { scale: 4, useCORS: true, letterRendering: true, scrollY: 0, windowWidth: 794 }, 
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' } 
         };
@@ -1790,6 +1851,7 @@ const app = {
         document.getElementById("pdf-box").innerHTML = html; document.getElementById("pdf-box").className = "mobile-preview-scale";
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = 'Concluir e Salvar'; btnConfirm.onclick = () => { app.confirmAndSaveDoc(); };
         document.getElementById("preview").style.display = "flex";
+        history.pushState(null, null, window.location.pathname);
     },
 
     previewRentalsReport() {
@@ -1803,13 +1865,14 @@ const app = {
             if(isPaid) totalPago += r.valor; else totalPendente += r.valor;
             let venc = r.vencimento ? new Date(r.vencimento + 'T12:00:00').toLocaleDateString('pt-BR') : '-';
             let statusText = isPaid ? `<span style="color:var(--success)"><b>PAGO</b> (${new Date(r.dataPgto + 'T12:00:00').toLocaleDateString('pt-BR')})</span>` : `<span style="color:var(--danger)"><b>PENDENTE</b></span>`;
-            linhasTabela += `<tr><td style="font-size:10px"><b>${r.descricao}</b><br><span style="color:#64748b">${r.inquilino}</span></td><td style="text-align:center">${venc}</td><td style="text-align:center">${statusText}</td><td style="text-align:right; font-weight:bold">${BRL.format(r.valor)}</td></tr>`;
+            linhasTabela += `<tr><td style="font-size:10px"><b>${r.descricao}</b><br><span style="color:#6b7280">${r.inquilino}</span></td><td style="text-align:center">${venc}</td><td style="text-align:center">${statusText}</td><td style="text-align:right; font-weight:bold">${BRL.format(r.valor)}</td></tr>`;
         });
         const html = `<div class="p-header p-break-avoid" style="border-bottom-color: var(--purple)"><div class="p-brand-col"><h1 class="p-title">${en}</h1><p class="p-subtitle">Documento de Controle Interno</p></div><div class="p-meta-col"><div class="p-badge" style="background:var(--purple); color:#fff">BALANÇO DE ALUGUÉIS #${docNum}</div><div class="p-meta-row">Emissão: ${new Date().toLocaleDateString()}</div></div></div><div class="p-grid p-break-avoid"><div class="p-box" style="border-color:var(--success); width:48%;"><div class="p-box-head" style="background:#dcfce7; color:#166534; border-color:var(--success)">RECEBIDOS (PAGOS)</div><div class="p-box-content" style="font-size:18px; font-weight:bold; color:var(--success)">${BRL.format(totalPago)}</div></div><div class="p-box" style="border-color:var(--danger); width:48%;"><div class="p-box-head" style="background:#fee2e2; color:#991b1b; border-color:var(--danger)">PENDENTES (A VENCER/ATRASOS)</div><div class="p-box-content" style="font-size:18px; font-weight:bold; color:var(--danger)">${BRL.format(totalPendente)}</div></div></div><table class="p-table" style="margin-top:20px"><thead><tr><th style="width:40%; background:var(--purple); border-color:var(--purple)">ITEM / LOCATÁRIO</th><th style="width:15%; text-align:center; background:var(--purple); border-color:var(--purple)">VENCIMENTO</th><th style="width:25%; text-align:center; background:var(--purple); border-color:var(--purple)">STATUS</th><th style="width:20%; text-align:right; background:var(--purple); border-color:var(--purple)">VALOR</th></tr></thead><tbody>${linhasTabela}</tbody></table><div class="p-total-section p-break-avoid"><div class="p-total-card" style="border-color:var(--purple); background:#faf5ff;"><div class="p-total-label">TOTAL GERAL PROJETADO:</div><div class="p-total-amount" style="color:var(--purple)">${BRL.format(totalPago + totalPendente)}</div></div></div>`;
         this.currentDocState = { id: Date.now(), typeTitle: "RELATÓRIO DE ALUGUÉIS", numero: docNum, clientName: `Controle Interno`, total: totalPago + totalPendente, html: html, isReport: true };
         document.getElementById("pdf-box").innerHTML = html; document.getElementById("pdf-box").className = "mobile-preview-scale";
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = 'Concluir e Salvar'; btnConfirm.onclick = () => { app.confirmAndSaveDoc(); };
         document.getElementById("preview").style.display = "flex";
+        history.pushState(null, null, window.location.pathname);
     },
 
     previewProviderHistory() {
@@ -1822,6 +1885,7 @@ const app = {
         document.getElementById("pdf-box").innerHTML = html; document.getElementById("pdf-box").className = "mobile-preview-scale";
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = 'Concluir e Salvar'; btnConfirm.onclick = () => { app.confirmAndSaveDoc(); };
         document.getElementById("preview").style.display = "flex";
+        history.pushState(null, null, window.location.pathname);
     },
 
     previewProviderReport(id) {
@@ -1839,6 +1903,7 @@ const app = {
         document.getElementById("pdf-box").innerHTML = html; document.getElementById("pdf-box").className = "mobile-preview-scale";
         const btnConfirm = document.getElementById("btn-confirm-save-pdf"); btnConfirm.innerHTML = 'Concluir e Salvar'; btnConfirm.onclick = () => { app.confirmAndSaveDoc(); };
         document.getElementById("preview").style.display = "flex";
+        history.pushState(null, null, window.location.pathname);
     },
 
     previewEasyReceipt() {
@@ -1921,6 +1986,9 @@ const app = {
         btnConfirm.onclick = () => { app.confirmAndSaveDoc(); };
         
         document.getElementById("preview").style.display = "flex";
+        
+        // Empurra estado para controlar botão voltar
+        history.pushState(null, null, window.location.pathname);
     },
 
     confirmAndSaveDoc() {
@@ -1948,6 +2016,46 @@ const app = {
 window.addEventListener('load', () => {
     pwa.init();
     if ('serviceWorker' in navigator) { navigator.serviceWorker.register('sw.js').then(reg => console.log('PWA OK!')).catch(err => console.log('PWA Erro: ', err)); }
+});
+
+// CONTROLE INTELIGENTE DO BOTÃO VOLTAR (ANDROID/NAVEGADOR)
+window.addEventListener('popstate', function (e) {
+    if(document.getElementById('auth-overlay').style.display !== 'none') return; 
+
+    if(document.getElementById('preview').style.display === 'flex') {
+        ui.close();
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    const modals = ['import-overlay', 'multiselect-overlay', 'provider-modal'];
+    for(let m of modals) {
+        const el = document.getElementById(m);
+        if(el && el.style.display === 'flex') {
+            el.style.display = 'none';
+            history.pushState(null, null, window.location.pathname);
+            return;
+        }
+    }
+
+    if(document.getElementById('nav-bar').style.transform === 'translateX(0px)') {
+        ui.toggleMenu();
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    const abaInicio = document.getElementById('f');
+    if (abaInicio.style.display === 'none') {
+        ui.tab('f', document.querySelectorAll('.nav-item')[0]);
+        history.pushState(null, null, window.location.pathname);
+        return;
+    }
+
+    if (confirm("Deseja mesmo sair do aplicativo?")) {
+        // Deixa a ação nativa acontecer
+    } else {
+        history.pushState(null, null, window.location.pathname);
+    }
 });
 </script>
 </body>

@@ -111,7 +111,7 @@ body { margin: 0; background: var(--bg-app); color: var(--text-main); overflow-x
     color: white;
     border-radius: 50px;
     padding: 12px 20px;
-    display: none; /* Escondido por padrão */
+    display: none;
     align-items: center;
     gap: 10px;
     font-weight: 800;
@@ -272,47 +272,17 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
     #preview .preview-header { flex-direction: column; gap: 15px; align-items: stretch; text-align: center; }
     #preview .preview-header > div { justify-content: center; }
     .preview-title { justify-content: center; margin-bottom: 5px; }
-    
-    .mobile-preview-scale {
-        transform: scale(0.42);
-        margin-bottom: -60%;
-    }
+    .mobile-preview-scale { transform: scale(0.42); margin-bottom: -60%; }
 }
 
-/* ========================================= */
-/* --- PDF PREVIEW STYLES (1 FOLHA FIXA A4) --- */
-/* ========================================= */
+/* PDF PREVIEW STYLES */
 #preview { position: fixed; inset: 0; background: #0f172a; display: none; flex-direction: column; z-index: 14000; }
 .preview-header { background: #1e293b; padding: 15px 25px; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 4px 15px rgba(0,0,0,0.5); border-bottom: 1px solid #334155; }
 .preview-title { color: #f8fafc; font-weight: 700; font-size: 15px; display: flex; align-items: center; gap: 10px; letter-spacing: 0.5px; }
-
-#pdf-wrapper { 
-    overflow: auto; 
-    padding: 30px; 
-    flex: 1; 
-    display: block; 
-    background: #334155; 
-    text-align: center; 
-    -webkit-overflow-scrolling: touch; 
-}
-
-#pdf-box { 
-    width: 794px; 
-    min-height: 980px;
-    background: #ffffff; 
-    padding: 30px;
-    color: #1e293b; 
-    box-shadow: 0 10px 40px rgba(0,0,0,0.4); 
-    font-family: 'Inter', sans-serif; 
-    margin: 0 auto; 
-    box-sizing: border-box; 
-    text-align: left; 
-    position: relative;
-    transform-origin: top center;
-}
+#pdf-wrapper { overflow: auto; padding: 30px; flex: 1; display: block; background: #334155; text-align: center; -webkit-overflow-scrolling: touch; }
+#pdf-box { width: 794px; min-height: 980px; background: #ffffff; padding: 30px; color: #1e293b; box-shadow: 0 10px 40px rgba(0,0,0,0.4); font-family: 'Inter', sans-serif; margin: 0 auto; box-sizing: border-box; text-align: left; position: relative; transform-origin: top center;}
 
 .p-break-avoid { page-break-inside: avoid; }
-
 .p-header { padding-bottom: 15px; border-bottom: 4px solid var(--primary); display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 15px; }
 .p-brand-col { display: flex; flex-direction: column; justify-content: center; max-width: 60%; }
 .p-logo { max-height: 60px; margin-bottom: 10px; object-fit: contain; object-position: left; }
@@ -321,27 +291,21 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .p-meta-col { text-align: right; }
 .p-badge { background: var(--accent); color: #fff; padding: 6px 14px; font-size: 12px; font-weight: 800; border-radius: 6px; display: inline-block; margin-bottom: 8px; letter-spacing: 0.5px; }
 .p-meta-row { font-size: 11px; color: #475569; font-weight: 600; margin-bottom: 4px; }
-
 .p-grid { display: flex; justify-content: space-between; gap: 20px; margin-bottom: 20px; page-break-inside: avoid; }
 .p-box { width: 48%; border: 1px solid #cbd5e1; border-radius: 8px; overflow: hidden; page-break-inside: avoid; background: #fff; }
 .p-box-head { background: #f8fafc; padding: 8px 12px; font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; border-bottom: 1px solid #cbd5e1; letter-spacing: 0.5px; }
 .p-box-content { padding: 12px; font-size: 11px; line-height: 1.6; color: #334155; word-break: break-word; }
-
 .p-table { width: 100%; border-collapse: collapse; margin-bottom: 20px; table-layout: fixed; }
 .p-table th { text-align: left; padding: 10px; background: var(--primary); color: #fff; font-size: 10px; text-transform: uppercase; letter-spacing: 1px; border: 1px solid var(--primary); font-weight: 700; }
 .p-table td { padding: 10px; border-bottom: 1px solid #e2e8f0; font-size: 11px; color: #334155; word-wrap: break-word; }
 .p-table tr:nth-child(even) td { background: #f8fafc; }
-
 .p-total-section { display: flex; justify-content: flex-end; page-break-inside: avoid; margin-bottom: 20px; }
 .p-total-card { width: 260px; background: #f8fafc; border: 2px solid #e2e8f0; border-radius: 10px; padding: 15px; text-align: right; }
 .p-total-label { font-size: 11px; font-weight: 800; color: #64748b; text-transform: uppercase; margin-bottom: 5px; letter-spacing: 0.5px; }
 .p-total-amount { font-size: 24px; color: var(--accent); font-weight: 900; letter-spacing: -0.5px; }
-
 .p-terms { margin-top: 15px; padding: 15px; background: #f1f5f9; border-left: 5px solid var(--primary); border-radius: 6px; font-size: 10px; color: #475569; white-space: pre-wrap; line-height: 1.5; page-break-inside: avoid; }
-
 .p-sign-area { margin-top: 40px; display: flex; justify-content: space-between; page-break-inside: avoid; }
 .p-sign-line { width: 45%; border-top: 1px solid #94a3b8; padding-top: 10px; text-align: center; font-size: 10px; font-weight: 800; color: #475569; text-transform: uppercase; }
-
 .p-footer { margin-top: 25px; border-top: 1px solid #e2e8f0; padding-top: 15px; text-align: center; font-size: 9px; color: #94a3b8; letter-spacing: 1px; font-weight: 600; }
 
 .badge-orcamento { background: var(--accent); }
@@ -351,11 +315,17 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 .badge-alugueis { background: var(--purple); }
 .badge-hist-pgto { background: var(--dark-blue); }
 .badge-material { background: var(--material); color: #fff; }
-
 .item-badge { font-size: 10px; padding: 3px 8px; border-radius: 6px; margin-left: 8px; font-weight: bold; }
 .ib-servico { background: #eff6ff; color: var(--accent); }
 .ib-material { background: #fff7ed; color: var(--material); }
 
+/* APRENDIZADO CARDS */
+.help-card { background: #fff; border-left: 4px solid var(--accent); padding: 20px; border-radius: 12px; margin-bottom: 15px; box-shadow: 0 4px 10px rgba(0,0,0,0.03); }
+.help-card h3 { margin: 0 0 10px 0; color: var(--primary); font-size: 16px; display: flex; align-items: center; gap: 10px; }
+.help-card h3 i { color: var(--accent); font-size: 18px; width: 24px; text-align: center; }
+.help-card p { font-size: 13px; color: var(--text-muted); line-height: 1.6; margin: 0; }
+.help-card ul { margin: 10px 0 0 0; padding-left: 20px; font-size: 13px; color: var(--text-muted); line-height: 1.6; }
+.help-card li { margin-bottom: 6px; }
 </style>
 </head>
 
@@ -378,7 +348,6 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         <i class="fas fa-bolt" style="color: var(--accent)"></i> ERP Pro
     </div>
     
-    <!-- FOTO DO USUÁRIO NO CABEÇALHO -->
     <div id="user-profile-badge" style="margin-left:auto; display:none; align-items:center; gap:10px; font-size:13px; font-weight:600; color:var(--text-muted)">
         <img id="user-avatar" src="" style="width:32px; height:32px; border-radius:50%; border:2px solid var(--accent); box-shadow:0 2px 5px rgba(0,0,0,0.1)">
     </div>
@@ -386,10 +355,8 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
 <div id="menu-overlay" onclick="ui.toggleMenu()"></div>
 
-<!-- MÓDULO DE AUTENTICAÇÃO MODERNIZADO COM VALIDAÇÃO DE ASSINATURA E TRIAL DE 3 DIAS -->
 <div id="auth-overlay">
     
-    <!-- ELEMENTOS INVISÍVEIS DE AUTENTICAÇÃO DO GOOGLE -->
     <div id="g_id_onload"
          data-client_id="725585205753-j1qf5rdtmd3nmt64esh87qu9cos5n2gt.apps.googleusercontent.com" 
          data-context="signin"
@@ -446,7 +413,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         <div class="auth-link" onclick="auth.switch('login')">Cancelar e Voltar</div>
     </div>
 
-    <!-- TELA DE BLOQUEIO / COBRANÇA DE ASSINATURA -->
+    <!-- TELA DE BLOQUEIO -->
     <div id="view-blocked" class="auth-card" style="display:none">
         <i class="fas fa-lock" style="font-size: 40px; color: var(--danger); margin-bottom: 15px;"></i>
         <h2 style="color: var(--primary); margin:0; font-weight:800">Acesso Bloqueado</h2>
@@ -480,6 +447,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         <div class="nav-item" onclick="ui.tab('p', this)"><i class="fas fa-hard-hat"></i>Equipe</div>
         <div class="nav-item" onclick="ui.tab('r', this)"><i class="fas fa-home"></i>Aluguéis</div>
         <div class="nav-item" onclick="ui.tab('i', this)"><i class="fas fa-box-open"></i>Catálogo</div>
+        <div class="nav-item" onclick="ui.tab('h', this)"><i class="fas fa-book-open"></i>Guia de Uso</div>
     </div>
     
     <!-- PAINEL DA ASSINATURA -->
@@ -585,69 +553,53 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
 
             <div style="margin: 25px 0; border-top: 2px dashed var(--border);"></div>
             
-            <!-- MODO LAUDO TÉCNICO -->
             <div id="v-laudo-builder" style="display:none; background:#f8fafc; padding:25px; border-radius:16px; border:1px solid #cbd5e1; margin-bottom:20px;">
                 <h4 style="margin:0 0 15px 0; color:var(--dark-blue); font-size:16px;"><i class="fas fa-search"></i> Preenchimento do Laudo Técnico</h4>
-                
                 <div class="input-row">
                     <div>
-                        <label style="color:var(--dark-blue)">Nº Registro / CREA <span style="color:var(--danger)">* Obrigatório</span></label>
+                        <label style="color:var(--dark-blue)">Nº Registro / CREA <span style="color:var(--danger)">*</span></label>
                         <input id="vl-crea" type="text" placeholder="Ex: CREA 123456-D" style="border-color:#94a3b8; background:#fff; margin-bottom:15px;">
                     </div>
                     <div>
-                        <label style="color:var(--dark-blue)">UF / Órgão <span style="color:var(--danger)">* Obrigatório</span></label>
+                        <label style="color:var(--dark-blue)">UF / Órgão <span style="color:var(--danger)">*</span></label>
                         <input id="vl-uf" type="text" placeholder="Ex: SP / CFT / CAU" style="border-color:#94a3b8; background:#fff; margin-bottom:15px;">
                     </div>
                 </div>
-
-                <label style="color:var(--dark-blue)">Diagnóstico / Informações Técnicas <span style="color:var(--danger)">* Obrigatório</span></label>
+                <label style="color:var(--dark-blue)">Diagnóstico / Informações Técnicas <span style="color:var(--danger)">*</span></label>
                 <textarea id="vl-info" rows="4" placeholder="Descreva as condições encontradas, testes realizados e o parecer técnico..." style="border-color:#94a3b8; background:#fff; margin-bottom:15px;"></textarea>
-                
                 <label style="color:var(--dark-blue)">Embasamento Legal e Normativo (Leis, NBR, NR)</label>
                 <textarea id="vl-leis" rows="3" placeholder="Ex: De acordo com a NBR 5410, NR-10, Lei nº X..." style="border-color:#94a3b8; background:#fff; margin-bottom:15px;"></textarea>
-                
                 <label style="color:var(--dark-blue)">Anexar Imagens / Evidências (Opcional)</label>
                 <input type="file" id="vl-imgs" accept="image/*" multiple onchange="app.processLaudoImages(this)" style="background:#fff; border-color:#94a3b8; padding:10px;">
-                
                 <div id="vl-img-preview" style="display:flex; gap:10px; flex-wrap:wrap; margin-bottom:20px;"></div>
-                
                 <button class="btn" style="background:var(--dark-blue); color:#fff; font-size:16px; padding:18px;" onclick="app.previewDoc()"><i class="fas fa-file-signature"></i> REVISAR E GERAR LAUDO</button>
             </div>
 
-            <!-- MODO PADRÃO E LISTA MATERIAIS: CARRINHO -->
             <div id="v-cart-builder">
                 <label style="font-size:13px; color:var(--primary)"><i class="fas fa-box"></i> Montar Lista de Itens</label>
                 <button class="btn btn-warning" onclick="app.openMultiSelect()" style="margin-bottom:20px; font-weight:800; padding:18px;">
                     <i class="fas fa-list-ul"></i> SELEÇÃO RÁPIDA DO CATÁLOGO
                 </button>
-
                 <select id="v-saved-items" onchange="app.fillItem(this)" style="background:#eff6ff; border-color:var(--accent); font-weight:600;"><option value="">📂 Buscar item unitário...</option></select>
                 <input id="v-item" placeholder="Ou digite a descrição do produto/serviço livremente...">
-                
                 <div class="input-row">
                     <div><label>Unidade</label><select id="v-un"><option value="un">UN</option><option value="m">Metro</option><option value="kg">KG</option><option value="h">Hora</option><option value="dia">Dia</option><option value="vb">Verba</option></select></div>
                     <div id="box-v-preco"><label>Preço (R$)</label><input type="number" id="v-preco" placeholder="0.00"></div>
                     <div><label>Qtd</label><input type="number" id="v-qtd" value="1"></div>
                 </div>
-
                 <div class="input-row" style="margin-top: 5px;">
                     <div><label>Peso (KG) <span style="font-weight:normal; text-transform:none">- Opcional</span></label><input type="number" id="v-peso" placeholder="Ex: 1.5"></div>
                     <div><label>Metragem (M) <span style="font-weight:normal; text-transform:none">- Opcional</span></label><input type="number" id="v-metro" placeholder="Ex: 10"></div>
                 </div>
-
                 <button class="btn btn-primary" onclick="app.addItem()"><i class="fas fa-plus"></i> LANÇAR ITEM</button>
             </div>
 
-            <!-- MODO RECIBO FÁCIL: BLOCO ISOLADO -->
             <div id="v-receipt-builder" style="display:none; background:#f0f9ff; padding:25px; border-radius:16px; border:1px solid #bae6fd; margin-bottom:20px;">
                 <h4 style="margin:0 0 15px 0; color:#0369a1; font-size:16px;"><i class="fas fa-receipt"></i> Preenchimento do Recibo Fácil</h4>
-                
                 <label style="color:#0284c7">Especificação (Referente a quê?)</label>
                 <textarea id="vr-desc" rows="2" placeholder="Ex: Pagamento referente aos serviços prestados..." style="border-color:#bae6fd; background:#fff; margin-bottom:15px;"></textarea>
-                
                 <label style="color:#0284c7">Valor Recebido (R$)</label>
                 <input type="number" id="vr-val" placeholder="0.00" style="border-color:#bae6fd; background:#fff; font-size:18px; font-weight:bold; color:var(--info); margin-bottom:20px;">
-                
                 <button class="btn btn-info" onclick="app.previewEasyReceipt()" style="font-size:16px; padding:18px;"><i class="fas fa-file-invoice-dollar"></i> REVISAR E GERAR RECIBO</button>
             </div>
 
@@ -864,8 +816,59 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
         <div id="i-list"></div>
     </section>
 
+    <!-- NOVA SEÇÃO: GUIA DE USO / APRENDIZADO -->
+    <section id="h" style="display:none">
+        <div class="section-header"><i class="fas fa-book-open"></i> Guia do Aplicativo</div>
+        
+        <div class="help-card" style="border-left-color: var(--accent);">
+            <h3><i class="fas fa-rocket"></i> Primeiros Passos</h3>
+            <p>Antes de gerar qualquer documento, vá na aba <b>Ajustes</b> e configure o Logotipo da sua empresa, Razão Social, Documento e seus Dados Bancários (Cláusulas Padrão). Essas informações sairão no rodapé de todos os seus PDFs automaticamente, deixando-os profissionais.</p>
+        </div>
+
+        <div class="help-card" style="border-left-color: var(--success);">
+            <h3><i class="fas fa-file-invoice"></i> Gerar Documentos (A Mágica)</h3>
+            <p>Aqui você faz tudo girar. Escolha o tipo de documento no menu suspenso:</p>
+            <ul>
+                <li><b>Orçamento / Pedido de Venda:</b> Para cobrar o cliente. Os valores entram como receita no Dashboard.</li>
+                <li><b>Pedido de Compra:</b> Para fornecedores. Os valores entram como gastos/despesas.</li>
+                <li><b>Lista de Materiais:</b> Gera um PDF limpo com as quantidades e pesos, sem mostrar os preços, ideal para entregar na loja de materiais.</li>
+                <li><b>Laudo Técnico:</b> Exige o preenchimento do CREA/Registro e permite anexar fotos das condições encontradas no local. Ideal para vistorias.</li>
+            </ul>
+        </div>
+
+        <div class="help-card" style="border-left-color: var(--warning);">
+            <h3><i class="fas fa-box-open"></i> Catálogo e Leitor de PDF</h3>
+            <p>Em <b>Catálogo</b>, você pode cadastrar serviços e produtos. O recurso mais incrível é o botão <b>Ler PDF de Tabela</b>: basta enviar a tabela de preços do seu fornecedor em formato PDF e o aplicativo vai extrair todos os itens e preços sozinho, injetando no seu banco de dados.</p>
+        </div>
+
+        <div class="help-card" style="border-left-color: var(--info);">
+            <h3><i class="fas fa-calendar-alt"></i> Agenda Inteligente</h3>
+            <p>A aba <b>Agenda</b> permite salvar compromissos e vincular aos seus clientes. Se o cliente tiver endereço cadastrado, aparecerá um botão <b>"Navegar no GPS"</b> para você abrir a rota direta. Ao gerar um documento na aba "Gerar Doc", você também pode preencher a data lá mesmo e o sistema joga para a agenda automaticamente.</p>
+        </div>
+
+        <div class="help-card" style="border-left-color: var(--dark-blue);">
+            <h3><i class="fas fa-hard-hat"></i> Equipe e Aluguéis</h3>
+            <ul>
+                <li><b>Equipe:</b> Cadastre seus ajudantes e defina se ganham por dia, semana ou obra. Ao clicar em <b>"Gerir"</b>, você lança os pagamentos feitos. O app calcula quanto você gastou com mão de obra no Resumo.</li>
+                <li><b>Aluguéis:</b> Se você loca equipamentos (ex: betoneiras, andaimes) ou imóveis. O sistema controla a data de vencimento e se está "Pago" ou "Pendente".</li>
+            </ul>
+        </div>
+
+        <div class="help-card" style="border-left-color: var(--danger);">
+            <h3><i class="fas fa-shield-alt"></i> Backup Central</h3>
+            <p>Na aba <b>Ajustes</b>, no final da página, você encontra a área de Backup. Acostume-se a clicar em <b>"Salvar Arquivo Local"</b> ou enviar por e-mail pelo menos uma vez por semana. Como o aplicativo funciona offline, os dados ficam salvos apenas no seu celular. O Backup garante que você nunca perca nada se trocar de aparelho.</p>
+        </div>
+    </section>
+
     <section id="e" style="display:none">
         <div class="section-header"><i class="fas fa-cog"></i> Ajustes do Sistema</div>
+        
+        <div class="card" style="background:#fffbeb; border:1px solid #fef08a;">
+            <div class="section-header" style="font-size:18px; margin-bottom:10px; color:#b45309;"><i class="fas fa-bell"></i> Notificações Locais</div>
+            <p style="font-size:12px; color:#b45309; margin-bottom:15px;">Ative para receber avisos da Agenda e da sua Assinatura diretamente na tela do celular (quando o aplicativo estiver aberto).</p>
+            <button class="btn btn-warning" onclick="notifier.requestPermission()"><i class="fas fa-check-double"></i> ATIVAR PERMISSÃO DE AVISOS</button>
+        </div>
+
         <div class="card">
             <label>Logotipo da Empresa</label>
             <div id="logo-preview-box">
@@ -880,6 +883,7 @@ select { cursor: pointer; appearance: none; background-image: url("data:image/sv
             <textarea id="e-p" rows="5" placeholder="Este texto sairá no rodapé dos Orçamentos e Pedidos..."></textarea>
             <button class="btn btn-success" onclick="app.saveConfig()">SALVAR PREFERÊNCIAS</button>
         </div>
+        
         <div class="card" style="border:1px solid var(--primary); background:var(--primary); color:#fff;">
             <div class="section-header" style="font-size:18px; margin-bottom:15px; color:#fff;"><i class="fas fa-shield-alt"></i> Backup Central</div>
             <p style="font-size:12px; opacity:0.8; margin-bottom:20px;">Exporte seu banco de dados para segurança.</p>
@@ -940,11 +944,9 @@ const ui = {
     toast(msg, type='success') {
         const div = document.createElement('div');
         div.className = `toast ${type}`;
-        
         let icon = '<i class="fas fa-check-circle" style="color:#4ade80"></i>';
         if(type === 'error') icon = '<i class="fas fa-exclamation-circle" style="color:#f87171"></i>';
         if(type === 'warning') icon = '<i class="fas fa-exclamation-triangle" style="color:#000"></i>';
-        
         div.innerHTML = `${icon} ${msg}`;
         document.getElementById('toast-container').appendChild(div);
         setTimeout(() => div.remove(), 3500);
@@ -970,7 +972,6 @@ const ui = {
             if(window.innerWidth <= 768) el.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
         }
         if(db) { app.load(); agenda.load(); }
-        
         const nav = document.getElementById('nav-bar');
         if(nav && nav.style.transform === 'translateX(0px)') {
             this.toggleMenu();
@@ -992,22 +993,16 @@ const ui = {
 const pwa = {
     deferredPrompt: null,
     init() {
-        // Escuta o evento oficial do Google Chrome para instalação
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             this.deferredPrompt = e;
-            // Mostra o botão flutuante
             document.getElementById('floating-install-btn').style.display = 'flex';
         });
-
-        // Escuta quando o usuário terminar de instalar com sucesso
         window.addEventListener('appinstalled', (e) => {
             document.getElementById('floating-install-btn').style.display = 'none';
             this.deferredPrompt = null;
             ui.toast("Aplicativo instalado com sucesso!");
         });
-
-        // Se o app JÁ ESTIVER ABERTO COMO APLICATIVO, esconde o botão
         if (window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true) {
             document.getElementById('floating-install-btn').style.display = 'none';
         }
@@ -1018,6 +1013,86 @@ const pwa = {
         const { outcome } = await this.deferredPrompt.userChoice;
         this.deferredPrompt = null;
         document.getElementById('floating-install-btn').style.display = 'none';
+    }
+};
+
+// ==========================================
+// MOTOR DE NOTIFICAÇÕES LOCAIS
+// ==========================================
+const notifier = {
+    async requestPermission() {
+        if (!("Notification" in window)) {
+            return ui.toast("Seu navegador não suporta notificações", "error");
+        }
+        const permission = await Notification.requestPermission();
+        if (permission === "granted") {
+            ui.toast("Permissão concedida! Você receberá avisos importantes.");
+            this.checkAll();
+        } else {
+            ui.toast("Permissão negada. Você não receberá os alertas na tela.", "warning");
+        }
+    },
+    
+    send(title, body, tag) {
+        const todayStr = new Date().toISOString().split('T')[0];
+        const key = `notif_${tag}_${todayStr}`;
+        
+        if (localStorage.getItem(key)) return; 
+        
+        if (Notification.permission === "granted") {
+            if (navigator.serviceWorker) {
+                navigator.serviceWorker.ready.then(reg => {
+                    reg.showNotification(title, {
+                        body: body,
+                        icon: 'https://cdn-icons-png.flaticon.com/512/6821/6821002.png',
+                        badge: 'https://cdn-icons-png.flaticon.com/512/6821/6821002.png',
+                        tag: tag
+                    });
+                    localStorage.setItem(key, '1');
+                });
+            } else {
+                new Notification(title, { body: body, tag: tag });
+                localStorage.setItem(key, '1');
+            }
+        }
+    },
+
+    checkSub() {
+        const dias = parseInt(localStorage.getItem("erp_v18_sub_days"));
+        if (dias === 1) {
+            this.send("Assinatura Vencendo amanhã!", "Sua assinatura do ERP Pro vence em 1 dia. Renove para não perder o acesso.", "sub_vencendo");
+        } else if (dias === 0) {
+            this.send("Assinatura Vence Hoje!", "Sua assinatura vence hoje. Faça o pagamento para continuar usando.", "sub_hoje");
+        }
+    },
+
+    checkAgenda() {
+        if (!db) return;
+        const todayStr = new Date().toISOString().split('T')[0];
+        let amanhã = new Date();
+        amanhã.setDate(amanhã.getDate() + 1);
+        const amanhãStr = amanhã.toISOString().split('T')[0];
+
+        db.transaction("events", "readonly").objectStore("events").getAll().onsuccess = e => {
+            let events = e.target.result || [];
+            
+            let evAmanha = events.filter(ev => ev.date === amanhãStr);
+            let evHoje = events.filter(ev => ev.date === todayStr);
+
+            if (evAmanha.length > 0) {
+                this.send("Agenda de Amanhã", `Você tem ${evAmanha.length} compromisso(s) agendado(s) para amanhã.`, "agenda_amanhã");
+            }
+            if (evHoje.length > 0) {
+                this.send("Agenda de Hoje", `Lembrete: Você tem ${evHoje.length} compromisso(s) para o dia de hoje!`, "agenda_hoje");
+            }
+        };
+    },
+
+    checkAll() {
+        if ("Notification" in window && Notification.permission === "granted") {
+            this.checkSub();
+            this.checkAgenda();
+        }
     }
 };
 
@@ -1063,13 +1138,11 @@ const auth = {
             const data = await res.json();
             
             if (data && data.vencimento) {
-                // O e-mail já existe no banco de dados (pode estar ativo ou vencido)
                 const hoje = new Date();
                 hoje.setHours(0,0,0,0);
                 const vencimento = new Date(data.vencimento + 'T12:00:00'); 
                 
                 if (vencimento >= hoje) {
-                    // Assinatura está em dia
                     const diffTime = Math.abs(vencimento - hoje);
                     const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
                     localStorage.setItem("erp_v18_sub_days", diffDays); 
@@ -1078,20 +1151,14 @@ const auth = {
                     ui.toast(`Assinatura ativa até ${vencimento.toLocaleDateString('pt-BR')}`);
                     this.enter();
                 } else {
-                    // Assinatura está vencida (Não renova o teste grátis)
                     ui.hideLoading();
                     this.showBlockedScreen();
                 }
             } else {
-                // ========================================================
-                // O E-MAIL NÃO EXISTE! É UM NOVO CLIENTE.
-                // VAMOS LIBERAR 3 DIAS DE TESTE AUTOMATICAMENTE.
-                // ========================================================
                 const hoje = new Date();
-                hoje.setDate(hoje.getDate() + 3); // Adiciona 3 dias a partir de hoje
-                const vencimentoString = hoje.toISOString().split('T')[0]; // Converte para YYYY-MM-DD
+                hoje.setDate(hoje.getDate() + 3); 
+                const vencimentoString = hoje.toISOString().split('T')[0]; 
                 
-                // Grava os 3 dias grátis direto no seu Firebase para este usuário
                 await fetch(urlConsulta, {
                     method: 'PUT',
                     headers: { 'Content-Type': 'application/json' },
@@ -1130,19 +1197,34 @@ const auth = {
 
     logout() {
         localStorage.removeItem("erp_v18_auth_google");
+        localStorage.removeItem("erp_v18_auth");
         localStorage.removeItem("erp_v18_sub_days");
         location.reload();
     },
     
     init() {
-        const googleAuth = localStorage.getItem("erp_v18_auth_google");
-        const localAuth = localStorage.getItem("erp_v18_auth");
+        let gData = localStorage.getItem("erp_v18_auth_google");
+        let lData = localStorage.getItem("erp_v18_auth");
         
-        if(googleAuth || localAuth) {
-            this.switch('login');
-        } else {
-            this.switch('setup'); 
+        if (gData && gData !== "true") {
+            try {
+                let parsed = JSON.parse(gData);
+                if(parsed && parsed.email) {
+                    return this.verifySubscription(parsed.email); 
+                }
+            } catch(e) {}
         }
+        
+        if (lData) {
+            try {
+                let parsed = JSON.parse(lData);
+                if(parsed && parsed.email) {
+                    return this.verifySubscription(parsed.email); 
+                }
+            } catch(e) {}
+        }
+        
+        this.switch('setup'); 
     },
 
     switch(v) {
@@ -1254,6 +1336,8 @@ const auth = {
         }
         
         app.init();
+
+        setTimeout(() => { notifier.checkAll(); }, 2000);
     }
 };
 
@@ -1335,6 +1419,8 @@ const agenda = {
         const event = { date, time, type, address, obs, clientName };
         db.transaction("events", "readwrite").objectStore("events").add(event).onsuccess = () => {
             ui.toast('Agendado!'); this.load(); document.getElementById('ag-address').value = ''; document.getElementById('ag-obs').value = '';
+            
+            setTimeout(() => { notifier.checkAgenda(); }, 1000);
         };
     },
     load() {

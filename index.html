@@ -1131,7 +1131,7 @@ const auth = {
         const p = document.getElementById('setup-password').value;
         const s = document.getElementById('setup-secret').value;
         if(!email.includes('@')) return ui.toast('Insira um e-mail válido', 'error');
-        if(p.length < 4) return ui.toast('ASenha deve ter no mínimo 4 caracteres', 'error');
+        if(p.length < 4) return ui.toast('A senha deve ter no mínimo 4 caracteres', 'error');
         if(s.length < 3) return ui.toast('Palavra de segurança muito curta', 'error');
         localStorage.setItem("erp_v18_auth", JSON.stringify({ email: email, pass: this.hash(p), secret: this.hash(s.toLowerCase().trim()) }));
         localStorage.removeItem("erp_v18_auth_google");
@@ -1929,52 +1929,67 @@ const app = {
         history.pushState(null, null, window.location.pathname);
     },
 
+    // ===== FUNÇÃO OFF-SCREEN ATUALIZADA =====
     downloadJustPDF() {
         ui.showLoading("Gerando Arquivo em Alta Qualidade...");
-        const el = document.getElementById("pdf-box");
-        const hadScale = el.classList.contains("mobile-preview-scale");
-        
-        // 1. Remove a escala mobile e força o recálculo do tamanho
-        if (hadScale) el.classList.remove("mobile-preview-scale");
-        el.style.transform = "none"; // Garante a remoção do encolhimento
+        const originalEl = document.getElementById("pdf-box");
 
-        const badge = el.querySelector('.p-badge');
+        const badge = originalEl.querySelector('.p-badge');
         const filename = badge ? `${badge.innerText.replace(' #', '_')}.pdf` : `Documento_${Date.now()}.pdf`;
 
-        // 2. Novas opções otimizadas para Mobile e Desktop
+        // 1. Cria uma cópia (clone) do elemento visual
+        const clone = originalEl.cloneNode(true);
+        
+        // 2. Cria uma "sala invisível" isolada das limitações do celular
+        const hiddenContainer = document.createElement('div');
+        hiddenContainer.style.position = 'absolute';
+        hiddenContainer.style.top = '-9999px'; // Joga para fora da tela
+        hiddenContainer.style.left = '0';
+        hiddenContainer.style.width = '794px'; // Trava a largura exata de uma folha A4
+        hiddenContainer.style.background = '#ffffff';
+        hiddenContainer.style.zIndex = '-1';
+        
+        // 3. Remove a escala, sombras e margens apenas do clone invisível
+        clone.classList.remove("mobile-preview-scale");
+        clone.style.transform = "none";
+        clone.style.margin = "0";
+        clone.style.boxShadow = "none";
+
+        // Adiciona o clone dentro da sala invisível, e a sala no documento
+        hiddenContainer.appendChild(clone);
+        document.body.appendChild(hiddenContainer);
+
+        // 4. Novas configurações do PDF
         const opt = {
             margin: [5, 0, 10, 0], // Margens: Cima, Direita, Baixo, Esquerda (mm)
             filename: filename,
-            image: { type: 'jpeg', quality: 0.98 }, // 0.98 é mais estável que 1
+            image: { type: 'jpeg', quality: 0.98 },
             html2canvas: { 
-                scale: 2, // Scale 2 garante alta qualidade sem travar o celular
+                scale: 2, // Mantém escala de 2x para boa resolução sem travar a memória
                 useCORS: true, 
                 letterRendering: true, 
                 scrollY: 0, 
-                windowWidth: 794 // Trava a largura da "foto"
+                scrollX: 0
             },
             jsPDF: { unit: 'mm', format: 'a4', orientation: 'portrait' },
-            pagebreak: { mode: ['css', 'legacy'] } // LIGA o motor de quebra de página (.p-break-avoid)
+            pagebreak: { mode: ['css', 'legacy'] }
         };
 
-        // 3. Aguarda 350ms (invés de 100ms) para dar tempo da tela "esticar" 
-        // antes de o html2canvas tirar o print.
+        // 5. Gera o PDF lendo o clone escondido e depois o destrói
         setTimeout(() => {
-            html2pdf().set(opt).from(el).save().then(() => {
-                // Devolve o visual do mobile após concluir
-                if (hadScale) el.classList.add("mobile-preview-scale");
-                el.style.transform = ""; 
+            html2pdf().set(opt).from(clone).save().then(() => {
+                document.body.removeChild(hiddenContainer); // Apaga a cópia
                 ui.hideLoading();
                 ui.toast("Baixado com sucesso!");
             }).catch((err) => {
                 console.error("Erro PDF:", err);
-                if (hadScale) el.classList.add("mobile-preview-scale");
-                el.style.transform = "";
+                document.body.removeChild(hiddenContainer); // Apaga a cópia mesmo se der erro
                 ui.hideLoading();
                 ui.toast("Erro ao gerar.", "error");
             });
-        }, 350); 
+        }, 150); 
     },
+    // ===========================================
 
     previewRentalReceipt(id) {
         const r = this.rentals.find(x => x.id === id); if(!r) return;
